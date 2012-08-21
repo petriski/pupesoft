@@ -224,14 +224,14 @@
 
 						$pid = 0;
 
-						while ($tilrivirow = mysql_fetch_assoc($tilrivires)) {
+						while ($trow = mysql_fetch_assoc($tilrivires)) {
 							// haetaan oletuspaikan tiedot niin laitetaan se riville
-							$query = "SELECT * from tuotepaikat where yhtio='$kukarow[yhtio]' and tuoteno='$tilrivirow[tuoteno]' and oletus!=''";
+							$query = "SELECT * from tuotepaikat where yhtio='$kukarow[yhtio]' and tuoteno='$trow[tuoteno]' and oletus!=''";
 							$jtsre = pupe_query($query);
 							$jtstu = mysql_fetch_assoc($jtsre);
 
 							//haetaan tuotteen ostohinta
-							$query = "SELECT ostohinta, alennus from tuotteen_toimittajat where yhtio='$kukarow[yhtio]' and tuoteno='$tilrivirow[tuoteno]' and liitostunnus='$ttrow[liitostunnus]'";
+							$query = "SELECT ostohinta, alennus from tuotteen_toimittajat where yhtio='$kukarow[yhtio]' and tuoteno='$trow[tuoteno]' and liitostunnus='$ttrow[liitostunnus]'";
 							$ossre = pupe_query($query);
 							$osstu = mysql_fetch_assoc($ossre);
 
@@ -242,17 +242,31 @@
 										LEFT JOIN tilausrivin_lisatiedot ON (tilausrivin_lisatiedot.yhtio = tilausrivi.yhtio and tilausrivin_lisatiedot.tilausrivitunnus = tilausrivi.tunnus)
 										WHERE tilausrivi.yhtio 	= '{$kukarow["yhtio"]}'
 										AND tilausrivi.otunnus 	= '$tunnus'
-										AND tilausrivi.tunnus 	= '{$tilrivirow["tilausrivilinkki"]}'
+										AND tilausrivi.tunnus 	= '{$trow["tilausrivilinkki"]}'
 										AND tilausrivi.kpl 		= 0
 										AND tilausrivi.uusiotunnus = ''";
 							$upsres = pupe_query($query);
-
+							
+							$query =  "	SELECT lasku.liitostunnus, lasku.valkoodi
+										from lasku
+										where lasku.yhtio 	= '{$kukarow["yhtio"]}'
+										and lasku.tunnus  	= '$tunnus'
+										and lasku.tila 		= 'O' 
+										and lasku.alatila 	= ''";
+							$laskures = pupe_query($query);
+							$laskurow = mysql_fetch_assoc($laskures);
+							$kpl	  = $trow["kpl"];
+							
+							for ($alepostfix = 1; $alepostfix <= $yhtiorow['oston_alekentat']; $alepostfix++) {
+								$query_insert_ale_lisa .= " ale{$alepostfix} = '".$lis_ale_kaikki['ale'.$alepostfix]."',";
+							}
+			echo "Ostoalet: $query_insert_ale_lisa, $laskurow[valkoodi], $tunnus ja liitostunnus: $laskurow[liitostunnus], kpl: $kpl<br><br>";
 							if (mysql_num_rows($upsres) == 1) {
 								$loytyi = mysql_fetch_assoc($upsres);
 
 								$query =  "	UPDATE tilausrivi
-											SET varattu = '{$tilrivirow["kpl"]}',
-											tilkpl 		= '{$tilrivirow["kpl"]}'
+											SET varattu = '{$trow["kpl"]}',
+											tilkpl 		= '{$trow["kpl"]}'
 											WHERE yhtio = '{$kukarow["yhtio"]}'
 											AND tunnus	= '{$loytyi["tunnus"]}'";
 								$upsaresult = pupe_query($query);
@@ -271,28 +285,28 @@
 											laatija 		= '$kukarow[kuka]',
 											laadittu 		= now(),
 											yhtio 			= '$kukarow[yhtio]',
-											tuoteno 		= '$tilrivirow[tuoteno]',
-											varattu 		= '$tilrivirow[kpl]',
-											yksikko 		= '$tilrivirow[yksikko]',
+											tuoteno 		= '$trow[tuoteno]',
+											varattu 		= '$trow[kpl]',
+											yksikko 		= '$trow[yksikko]',
 											kpl 			= 0,
 											kpl2			= 0,
-											tilkpl 			= '$tilrivirow[kpl]',
+											tilkpl 			= '$trow[kpl]',
 											jt				= 0,
-											ale1 			= '$osstu[alennus]',
+											{$query_insert_ale_lisa}
 											alv 			= '',
 											netto			= '',
 											hinta 			= '$osstu[ostohinta]',
-											kerayspvm 		= '$tilrivirow[kerayspvm]',
+											kerayspvm 		= '$trow[kerayspvm]',
 											otunnus 		= '$tunnus',
 											tyyppi 			= 'O',
-											toimaika 		= '$tilrivirow[toimaika]',
-											kommentti 		= '$tilrivirow[kommentti]',
+											toimaika 		= '$trow[toimaika]',
+											kommentti 		= '$trow[kommentti]',
 											var 			= '',
-											try				= '$tilrivirow[try]',
-											osasto			= '$tilrivirow[osasto]',
+											try				= '$trow[try]',
+											osasto			= '$trow[osasto]',
 											perheid			= '',
 											perheid2		= '$pid',
-											nimitys 		= '$tilrivirow[nimitys]',
+											nimitys 		= '$trow[nimitys]',
 											jaksotettu		= ''";
 								$updre = pupe_query($query);
 								$lisatty_tun = mysql_insert_id();
@@ -322,12 +336,12 @@
 										muutospvm				= now(),
 										muuttaja				= '$kukarow[kuka]'
 										WHERE yhtio		 	 = '$kukarow[yhtio]'
-										and tilausrivitunnus = '$tilrivirow[rivitunnus]'";
+										and tilausrivitunnus = '$trow[rivitunnus]'";
 							$updres = pupe_query($query);
 
-							$tilauksesta_ostotilaus .= "<font class='message'>Tuote: $tilrivirow[tuoteno] $tilrivirow[kpl] kpl lisätty ostotilaukselle: $tunnus</font><br>";
+							$tilauksesta_ostotilaus .= "<font class='message'>Tuote: $trow[tuoteno] $trow[kpl] kpl lisätty ostotilaukselle: $tunnus</font><br>";
 
-							if ($tilrivirow["tunnus"] == $tilrivirow["perheid2"] and mysql_num_rows($tilrivires) > 1) {
+							if ($trow["tunnus"] == $trow["perheid2"] and mysql_num_rows($tilrivires) > 1) {
 								$pid = $lisatty_tun;
 
 								$query = "	UPDATE tilausrivi
