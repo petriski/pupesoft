@@ -1,5 +1,9 @@
 <form id="lomake-katelaskenta-hakutulokset">
     <table>
+        <!-- 
+            TFOOT elementti taulukon viimeinen rivi, jossa toiminnot
+            koko taulun tietojen k‰sittelemiseen yht‰aikaisesti.
+        --> 
         <tfoot>
             <tr>
                 <td><input type="checkbox" checked="checked" name="valitutrivit[]" value="" /></td>
@@ -9,6 +13,7 @@
                 <td><button>Laske kaikki</button></td>
             </tr>
         </tfoot>
+        
         <tbody>
             <tr>
                 <th>Valinta</th>
@@ -35,13 +40,19 @@
                 }
 
                 // Merkit‰‰n nimitykseen "poistuva"
-                if ($hae_ja_selaa_row['selite'] != 'B' and $verkkokauppa == "" and strtoupper($row["status"]) == "P") {
+                if ($hae_ja_selaa_row['selite'] != 'B' and 
+                        $verkkokauppa == "" and 
+                        strtoupper($row["status"]) == "P") {
                   $vari = "tumma";
                   $row["nimitys"] .= "<br> * ".t("Poistuva tuote");
                 }
 
                 // REFACTOR: Jos j‰‰ yli niin voi poistaa?
-                if ($yhtiorow['livetuotehaku_poistetut'] == 'Y' and ($row["epakurantti25pvm"] != 0000-00-00 or $row["epakurantti50pvm"] != 0000-00-00 or $row["epakurantti75pvm"] != 0000-00-00 or $row["epakurantti100pvm"] != 0000-00-00)) {
+                if ($yhtiorow['livetuotehaku_poistetut'] == 'Y' and 
+                        ($row["epakurantti25pvm"] != 0000-00-00 or 
+                         $row["epakurantti50pvm"] != 0000-00-00 or 
+                         $row["epakurantti75pvm"] != 0000-00-00 or 
+                         $row["epakurantti100pvm"] != 0000-00-00)) {
                   $vari = 'spec';
                 }
       
@@ -51,34 +62,24 @@
                  */
                 $tuotteen_lisatiedot = tuotteen_lisatiedot($row["tuoteno"]);
                 $row["nimitys"] .= $tuotteen_lisatiedot_arvo[kentta] . "&raquo;" . $tuotteen_lisatiedot_arvo[selite];
-                
-                /**
-                 * Haetaan tuotteen hinta. 
-                 * 
-                 * Funktiokutsu sama kuin tuote_selaus_haku.php -tiedostossa 
-                 * oleva piirra_hinta(). Muokattu funktiota siten, ett‰ 
-                 * echotetun sarakkeen tilasta palauttaa hinnan.
-                 * 
-                 * hae_hinta() -funktio sijaitsee katelaskenta.php -tiedostossa. 
-                 */
-                $rowhinta = laske_hinta($row, $oleasrow, $valuurow, $vari, $classmidl, $hinta_rajaus, $poistetut,
-  $lisatiedot);
-                
             ?>
+            
             <tr class="aktiivi">
                 <td><input type="checkbox" checked="checked" name="valitutrivit[]" value="<?php echo $row["tuoteno"]; ?>" /></td>
                 <td><?php echo $row["tuoteno"]; ?></td>
                 <td><?php echo $row["nimitys"]; ?></td>
                 <td><?php echo $row["osasto"] . "<br />" . $row["try"]; ?></td>
-                <td><?php echo $rowhinta; ?></td>
+                <td><?php echo $row["myyntihinta"]; ?></td>
                 <?php hae_ja_piirra_saldo($row, $yhtiot, $oleasrow); // funktio katelaskenta.php -tiedostossa. ?>
                 <td><input type="text" name="valitutkateprosentit[]" value="" /></td>
                 <td><input type="text" name="valituthinnat[]" value="" /></td>
                 <td><button>Laske</button></td>
             </tr>
             <?php } // Suljetaan tulosrivin foreach ?>
+        
         </tbody>
     </table>
+    
     <input type="submit" 
            name="submit-lomake-katelaskenta-hakutulokset" 
            id="submit-lomake-katelaskenta-hakutulokset" 
