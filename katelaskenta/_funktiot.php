@@ -259,6 +259,8 @@ function valmistele_hakutulokset($tuotteet, $verkkokauppa, $hae_ja_selaa_row) {
                 strtoupper($arvo["status"]) == "P") {
             $tuotteet[$avain]["nimitys"] .= "<br> * " . t("Poistuva tuote");
         }
+        
+        $tuotteet[$avain]["myyntihinta"] = hintapyoristys($arvo["myyntihinta"], 2);
 
         // Laske myyntihinta keskihankintahinnasta ja tallenna se
         // uuteen sarakkeeseen myöhempää käyttöä varten.
@@ -267,13 +269,16 @@ function valmistele_hakutulokset($tuotteet, $verkkokauppa, $hae_ja_selaa_row) {
         // Tämä vaikuttaa siis tuotteisiin, johon sitä ei ole määritetty
         // tietokantamuutosten jälkeen tai kate on merkitty, ettei sitä
         // ylipäätänsä laskenta.
-        if ($arvo["katelaskenta"] != '0' || $arvo["katelaskenta"] != NULL) {
-            $keskihankintahinta = (float) $arvo["kehahin"];
-            $myyntikate = (float) $arvo["myyntikate"];
-
-            $laskettu_myyntihinta = $keskihankintahinta / ( 1 - ( $myyntikate / 100 ) );
-            $tuotteet[$avain]["laskettu_myyntihinta"] = hintapyoristys($laskettu_myyntihinta, 2);
-        }
+        
+        // REFACTOR: Saattoi jäädä ylimääräiseksi. Katso myöhemmin kun on
+        // saatu palautetta.
+//        if ($arvo["katelaskenta"] != '0' || $arvo["katelaskenta"] != NULL) {
+//            $keskihankintahinta = (float) $arvo["kehahin"];
+//            $myyntikate = (float) $arvo["myyntikate"];
+//
+//            $laskettu_myyntihinta = $keskihankintahinta / ( 1 - ( $myyntikate / 100 ) );
+//            $tuotteet[$avain]["laskettu_myyntihinta"] = hintapyoristys($laskettu_myyntihinta, 2);
+//        }
     }
 
     return $tuotteet;
