@@ -1,87 +1,60 @@
-<form id="lomake-katelaskenta-hakutulokset">
-    <table>
-        <!-- 
-            TFOOT elementti taulukon viimeinen rivi, jossa toiminnot
-            koko taulun tietojen k‰sittelemiseen yht‰aikaisesti.
-        --> 
-        <tfoot>
-            <tr>
-                <td><input type="checkbox" checked="checked" name="valitutrivit[]" value="" /></td>
-                <td colspan="5">&nbsp;</td>
-                <td><input type="text" name="valitutkateprosentit[]" value="" /></td>
-                <td><input type="text" name="valituthinnat[]" value="" /></td>
-                <td><button>Laske kaikki</button></td>
-            </tr>
-        </tfoot>
-        
-        <tbody>
-            <tr>
-                <th>Valinta</th>
-                <th>Tuoteno</th>
-                <th>Nimitys</th>
-                <th>Osasto<br>Try</th>
-                <th>Hinta</th>
-                <th>Myyt‰viss‰</th>
-                <th>Kate %</th>         
-                <th>Hinnat</th>                
-                <th>&nbsp</th>
-            </tr>
-            <?php 
+<?php if (!array_key_exists("ilmoitus", $template)) { ?>
+    <form id="lomake-katelaskenta-hakutulokset">
+        <table>
+            <!-- 
+                TFOOT elementti taulukon viimeinen rivi, jossa toiminnot
+                koko taulun tietojen k‰sittelemiseen yht‰aikaisesti.
+            --> 
+            <tfoot>
+                <tr>
+                    <td><input type="checkbox" checked="checked" name="valitutrivit[]" value="" /></td>
+                    <td colspan="5">&nbsp;</td>
+                    <td><input type="text" name="valitutkateprosentit[]" value="" /></td>
+                    <td><input type="text" name="valituthinnat[]" value="" /></td>
+                    <td><button>Laske kaikki</button></td>
+                </tr>
+            </tfoot>
+
+            <tbody>
+                <tr>
+                    <th>Valinta</th>
+                    <th>Tuoteno</th>
+                    <th>Nimitys</th>
+                    <th>Osasto<br>Try</th>
+                    <th>Myyntihinta</th>
+                    <th>Myyt‰viss‰</th>
+                    <th>Kate %</th>         
+                    <th>Hinnat</th>                
+                    <th>&nbsp</th>
+                </tr>
+                <?php
                 // K‰yd‰‰n hakutulokset l‰pi.
-                foreach ($rows as $row_key => &$row) { // $rows muuttuja tulee templaten ulkopuolelta 
-                
-                // REFACTOR: Mihin $vari muuttujaa k‰ytet‰‰n?
-                $vari = "";
-                
-                // Laajennetaan tuotteen nimityst‰ "korvaa tuotteen" merkinn‰ll‰
-                if ($verkkokauppa == "" and isset($row["mikakorva"])) {
-                  $vari = 'spec';
-                  $row["nimitys"] .= "<br> * ".t("Korvaa tuotteen").": $row[mikakorva]";
-                }
+                // $template muuttuja on alustettu t‰m‰n templaten ulkopuolella.
+                foreach ($template["tuotteet"] as $avain => &$tuote) {
+                    ?>
 
-                // Merkit‰‰n nimitykseen "poistuva"
-                if ($hae_ja_selaa_row['selite'] != 'B' and 
-                        $verkkokauppa == "" and 
-                        strtoupper($row["status"]) == "P") {
-                  $vari = "tumma";
-                  $row["nimitys"] .= "<br> * ".t("Poistuva tuote");
-                }
+                    <tr class="aktiivi">
+                        <td><input type="checkbox" checked="checked" name="valitutrivit[]" value="<?php echo $tuote["tuoteno"]; ?>" /></td>
+                        <td><?php echo $tuote["tuoteno"]; ?></td>
+                        <td><?php echo $tuote["nimitys"]; ?></td>
+                        <td><?php echo $tuote["osasto"] . "<br />" . $tuote["try"]; ?></td>
+                        <td><?php echo $tuote["laskettu_myyntihinta"] . "&nbsp;" . $template["yhtio"]["valkoodi"]; ?></td>
+                        <?php hae_ja_piirra_saldo($tuote, $yhtiot, $oleastuote); // funktio katelaskenta.php -tiedostossa. ?>
+                        <td><input type="text" name="valitutkateprosentit[]" value="<?php echo $tuote["myyntikate"]; ?>" /></td>
+                        <td><input type="text" name="valituthinnat[]" value="<?php echo $tuote["katelaskenta"]; ?>" /></td>
+                        <td><button>Laske</button></td>
+                    </tr>
 
-                // REFACTOR: Jos j‰‰ yli niin voi poistaa?
-                if ($yhtiorow['livetuotehaku_poistetut'] == 'Y' and 
-                        ($row["epakurantti25pvm"] != 0000-00-00 or 
-                         $row["epakurantti50pvm"] != 0000-00-00 or 
-                         $row["epakurantti75pvm"] != 0000-00-00 or 
-                         $row["epakurantti100pvm"] != 0000-00-00)) {
-                  $vari = 'spec';
-                }
-      
-                /**
-                 * Haetaan tuotenumeron perusteella tuotteen lis‰tiedot ja
-                 * list‰‰n tulokset nimitykset sarakkeen arvoon. 
-                 */
-                $tuotteen_lisatiedot = tuotteen_lisatiedot($row["tuoteno"]);
-                $row["nimitys"] .= $tuotteen_lisatiedot_arvo[kentta] . "&raquo;" . $tuotteen_lisatiedot_arvo[selite];
-            ?>
-            
-            <tr class="aktiivi">
-                <td><input type="checkbox" checked="checked" name="valitutrivit[]" value="<?php echo $row["tuoteno"]; ?>" /></td>
-                <td><?php echo $row["tuoteno"]; ?></td>
-                <td><?php echo $row["nimitys"]; ?></td>
-                <td><?php echo $row["osasto"] . "<br />" . $row["try"]; ?></td>
-                <td><?php echo $row["myyntihinta"]; ?></td>
-                <?php hae_ja_piirra_saldo($row, $yhtiot, $oleasrow); // funktio katelaskenta.php -tiedostossa. ?>
-                <td><input type="text" name="valitutkateprosentit[]" value="" /></td>
-                <td><input type="text" name="valituthinnat[]" value="" /></td>
-                <td><button>Laske</button></td>
-            </tr>
-            <?php } // Suljetaan tulosrivin foreach ?>
-        
-        </tbody>
-    </table>
-    
-    <input type="submit" 
-           name="submit-lomake-katelaskenta-hakutulokset" 
-           id="submit-lomake-katelaskenta-hakutulokset" 
-           value="Laske kaikki ja tallenna" />
-</form>
+                <?php } // Suljetaan tulosrivin foreach ?>
+
+            </tbody>
+        </table>
+
+        <input type="submit" 
+               name="submit-lomake-katelaskenta-hakutulokset" 
+               id="submit-lomake-katelaskenta-hakutulokset" 
+               value="Laske kaikki ja tallenna" />
+    </form>
+<?php } else { // array_key_exists() tarkistuksen else osio ?>
+    <p><font class="message"><?php echo $template["ilmoitus"]; ?></font><p>
+<?php }  // array_key_exists() loppu ?>
