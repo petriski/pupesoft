@@ -929,3 +929,153 @@ $verkkokauppa, $hae_ja_selaa_row, $toim_kutsu, $kukarow, $ostoskori, $valittu_ta
         }
     }
 }
+
+
+function lisaa_hintaan_kate($keskihankintahinta, $kateprosentti) {
+
+    $keskihankintahinta = (float)$keskihankintahinta;
+    $kateprosentti = (float)$kateprosentti;
+
+    return $keskihankintahinta / ( 1 - ( $kateprosentti / 100 ) );
+}
+
+function tallenna_katemuutokset($data) {
+    
+    
+    # Luodaan virhe -taulukko viestejä varten
+    # Tarkistetaan ja siivotaan valitutrivit taulukko
+    # Tarkistetaan ja siivotaan annetut kateprosentit
+    # -> Poistetaan taulusta kaikki ylimääräiset paitsi valitut rivit
+    # -> Tarkistetaan, että kateprosentti on 0-100 välillä
+    # Tarkistetaan ja siivotaan keskihankintahinnat
+    # -> Tarkistetaan, että vain valitut rivit jäävät
+    # Tarkistetaan ja siivotaan annetut katelaskentakomennot
+    # -> Suodatetaan valitut rivit jäljelle
+    # -> Tarkistetaan, että komennot ovat sallittujen listalla
+    # -> Siivotaan ylimääräiset merkit
+    # -> Siivotaan duplikaattimerkit
+    # -> Palautetaan siivottu taulukko
+    
+    # Rakennetaan sql update kysely
+    # -> Aloitetaaj UPDATE -komennolla
+    # -> luodaan komento myyntikatteen, hintamuutospvm ja katelaskentakomentojen päivittämiseen
+    # -> jos katelaskentakomennoissa ei ole 0(nollaa) niin lisätään seuraavat päivityskomennot
+    # ---> myyntihinta, myymälähinta, nettohinta
+    # -> Lisätään komentoon where ehto
+    # -> Palautetaan rakennetut komennot taulukosssa.
+    
+    # Lisätään virheet... jos ongelmia, palautetaan aina virhetaulu, jossa ei saa olla
+    # merkintöjä lopussa.
+    
+    # Ajetaan komennot tietokantaan pupe_queryllä.
+    //$virheet = array();
+    //
+    //echo '<pre>' . print_r($data, 1) . '</pre>';
+    //
+    //// Sijoitetaan tarvittavat kentät muuttujiin.
+    //$valitutrivit = (array_key_exists("valitutrivit", $data) ? $data["valitutrivit"] : NULL);
+    //$valitutkateprosentit = (array_key_exists("valitutkateprosentit", $data) ? $data["valitutkateprosentit"] : NULL);
+    //$valituthinnat = (array_key_exists("valituthinnat", $data) ? $data["valituthinnat"] : NULL);
+    //$valitutkeskihankintahinnat = (array_key_exists("valitutkeskihankintahinnat", $data) ? $data["valitutkeskihankintahinnat"] : NULL);
+    //
+    // 
+    //// Tarkistetaan tyhjien taulujen varalta ja keskeytetään suoritus.
+    //if ($valitutrivit == NULL || $valitutkateprosentit == NULL || $valituthinnat == NULL) {
+    //    $virheet["virheilmoitus"] = "Tietojen lähettämisessä ilmeentyi ongelmia. Muutoksia ei tehty.";
+    //    return false;
+    //}
+    //
+    //// Suodatetaan pois tyhjät, jos formissa on ylimääräisiä kenttiä
+    //$valitutrivit = array_filter($valitutrivit);
+    //// Suodatetaan kateprosenteista pelkästään valitut rivit
+    // $valitutkateprosentit = array_intersect_key($valitutkateprosentit, $valitutrivit);
+    // // Suodatetaan katelaskennan määritteistä vain valitut rivit
+    // $valituthinnat = array_intersect_key($valituthinnat, $valitutrivit);
+    // 
+    // // Suodatetaan katelaskennan määritteistä vain valitut rivit
+    // $valitutkeskihankintahinnat = array_intersect_key($valitutkeskihankintahinnat, $valitutrivit);
+    // 
+    // //echo '<pre>' . print_r($valitutkateprosentit, 1) . '</pre>';
+    // //echo '<pre>' . print_r($valituthinnat, 1) . '</pre>';
+    // //echo '<pre>' . print_r($valitutrivit, 1) . '</pre>';
+    // 
+    //// Määritetään katelaskenta-arvoille oikeat tuote-taulun
+    //// sarakkeiden nimet, joihin hinnat lasketaan.
+    //$sallitut_katelaskentakomennot = array("m", "y", "n", "0");
+    //$katelaskentakomentoja_vastaavat_taulut = array("m" => "myyntihinta",
+    //                                                "y" => "myymalahinta",
+    //                                                "n" => "nettohinta");
+    //
+    //  
+    //// Luodaan update komennot
+    //$updatekomennot = array();
+    //
+    //foreach($valitutrivit as $rivitunnus) {
+    //    $update = "UPDATE tuote SET ";
+    //    $rivitunnus = "'$rivitunnus'";
+    //    
+    //    /**
+    //     * Seuraavat katelaskentakomentorivit on tehty tarkistamaan
+    //     * mitä komentoja on annettu ja mihin riveille hinnat lasketaan.
+    //     * Jos on nolla tai tyhjä nii skipataan.
+    //     */
+    //    $katelaskentakomennot = str_split($valituthinnat[$rivitunnus]);
+    //    $katelaskentakomennot = array_unique($katelaskentakomennot);
+    //    $katelaskentakomennot = array_filter($katelaskentakomennot, function($val) {return trim($val); });
+    //    // $katelaskentakomennot = array_intersect($katelaskentakomennot, $sallitut_katelaskentakomennot);
+    //     echo '<pre>' . print_r($katelaskentakomennot, 1) . '</pre>';
+    //    //if(count($katelaskentakomennot) <= 0) {
+    //    //    $virheet["virheilmoitus"] = "Tietoja ei päivitetty, virheellinen katelaskentakomento.";
+    //    //    continue;
+    //    //}
+    //    
+    //    if(!in_array("0", $katelaskentakomennot)) {
+    //      
+    //        
+    //        // Tarkistetaan että kateprosentti on annettu
+    //        $annettu_kateprosentti = $valitutkateprosentit[$rivitunnus];
+    //        
+    //        // Tarkistetaan että kateprosentissa on jokin luku, muuten skipataan rivi
+    //        if(count($annettu_kateprosentti) <= 0 ) {
+    //            $virheet["virheilmoitus"] = "Tietoja ei päivitetty, virheellinen kateprosentti.";
+    //            continue;
+    //        }
+    //        
+    //        // Tarkistetaan että kateprosentti ei ole negatiivinen, muuten skipataan.
+    //         if($annettu_kateprosentti < 0 ) {
+    //            $virheet["virheilmoitus"] = "Tietoja ei päivitetty, negatiivinen kateprosentti.";
+    //            continue;
+    //         }
+    //         
+    //         // Tarkistetaan että kateprosentti ei ole negatiivinen, muuten skipataan.
+    //         if($annettu_kateprosentti >= 100 ) {
+    //            $virheet["virheilmoitus"] = "Tietoja ei päivitetty, kateprosentti ei voi olla 100 tai enemmän.";
+    //            continue;
+    //         }
+    //        
+    //        foreach($katelaskentakomennot as $komennot) {
+    //            $uusihinta = lisaa_hintaan_kate($valitutkeskihankintahinnat[$rivitunnus], $annettu_kateprosentti);
+    //            $update .= "{$katelaskentakomentoja_vastaavat_taulut[$komennot]} = {$uusihinta}, ";
+    //        }
+    //    }
+    //    
+    //    $katelaskentakomennot_yhdistetty = join($katelaskentakomennot);
+    //    
+    //    $update .= "katelaskenta = '{$katelaskentakomennot_yhdistetty}', ";
+    //    $update .= "myyntikate = '{$valitutkateprosentit[$rivitunnus]}', ";
+    //    $update .= "hintamuutospvm = NOW() ";
+    //    $update .= "WHERE tunnus = {$rivitunnus}";
+    //    array_push($updatekomennot, $update);
+    //}
+    //
+    //echo '<pre>' . print_r($updatekomennot, 1) . '</pre>';
+    //
+    //foreach($updatekomennot as $updatesql) {
+    //    pupe_query($updatesql);        
+    //}
+    //
+    return $virheet;
+}
+
+
+

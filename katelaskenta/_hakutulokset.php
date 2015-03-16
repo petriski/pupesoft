@@ -33,18 +33,19 @@
                 // Käydään hakutulokset läpi.
                 // $template muuttuja on alustettu tämän templaten ulkopuolella.
                 foreach ($template["tuotteet"] as $avain => &$tuote) {
-                    $tuotenumero = $tuote["tuoteno"];
+                    $tuotetunnus = $tuote["tunnus"];
                     ?>
 
                     <tr class="aktiivi" id="rivi_<?php echo trim($tuote["tuoteno"]); ?>" data-kehahinta="<?php echo $tuote["kehahin"]; ?>">
-                        <td><input type="checkbox" checked="checked" name="valitutrivit['<?php echo $tuotenumero; ?>']" value="<?php echo $tuote["tuoteno"]; ?>" /></td>
+                        <td style="display: none;"><input type="hidden" value="<?php echo $tuote["kehahin"]; ?>" name="valitutkeskihankintahinnat['<?php echo $tuotetunnus; ?>']" /></td>
+                        <td><input type="checkbox" checked="checked" name="valitutrivit['<?php echo $tuotetunnus; ?>']" value="<?php echo $tuotetunnus; ?>" /></td>
                         <td><?php echo $tuote["tuoteno"]; ?></td>
                         <td><?php echo $tuote["nimitys"]; ?></td>
                         <td><?php echo $tuote["osasto"] . "<br />" . $tuote["try"]; ?></td>
                         <td><span class="hinta" style="vertical-align: baseline;"><?php echo $tuote["myyntihinta"]; ?></span> <?php echo $template["yhtio"]["valkoodi"]; ?></td>
                         <?php hae_ja_piirra_saldo($tuote, $yhtiot, $oleastuote); // funktio katelaskenta.php -tiedostossa. ?>
-                        <td><input type="text" name="valitutkateprosentit['<?php echo $tuotenumero; ?>']" value="<?php echo $tuote["myyntikate"]; ?>" /></td>
-                        <td><input type="text" name="valituthinnat['<?php echo $tuotenumero; ?>']" value="<?php echo $tuote["katelaskenta"]; ?>" /></td>
+                        <td><input type="text" name="valitutkateprosentit['<?php echo $tuotetunnus; ?>']" value="<?php echo $tuote["myyntikate"]; ?>" /></td>
+                        <td><input type="text" name="valituthinnat['<?php echo $tuotetunnus; ?>']" value="<?php echo $tuote["katelaskenta"]; ?>" /></td>
                         <td><a href="#">Laske</a></td>
                     </tr>
 

@@ -11,8 +11,12 @@ else
     exit;
 
 include "_funktiot.php";
-
-echo '<pre>'.print_r($_POST, 1).'</pre>';
+$submit_katelaskenta = (isset($_POST["submit-katelaskenta"]) ? $_POST["submit-katelaskenta"] : "");
+if(strlen($submit_katelaskenta) > 0) {
+    $post_array = $_POST;
+    $virheet = tallenna_katemuutokset($post_array);
+    echo '<pre>' . print_r($virheet, 1) . '</pre>';
+}
 
 /**
  * Seuraavat kaksi if-lausetta liittyvät poistetut valintaan tuotteita

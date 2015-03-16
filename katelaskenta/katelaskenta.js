@@ -81,7 +81,8 @@ $(document).ready(function () {
             return false;
         }
         uusiHinta = floatKeskihankintaHinta / (1 - (floatMyyntikate / 100));
-        $(hintaElementti).empty().text(uusiHinta.toFixed(2));
+        var htmlUusiHinta = "<font style=\"color: red; font-weight: bold;\">" + uusiHinta.toFixed(2) + "</font>";
+        $(hintaElementti).empty().html(htmlUusiHinta);
         return true;
     };
     
@@ -97,18 +98,19 @@ $(document).ready(function () {
 
 
     $.each(kaikkiTuoterivit, function () {
-        var hintaElementti = $(this).find("td:nth-child(5) span.hinta");
+        var hintaElementti = $(this).find("td:nth-child(6) span.hinta");
         var keskihankintahinta = $(this).data("kehahinta");
-        var myyntikateElementti = $(this).find("td:nth-child(7) input");
+        var myyntikateElementti = $(this).find("td:nth-child(8) input");
         $(this).find("td:last-child a").on("click", function (event) {
             event.preventDefault();
             var myyntikate = myyntikateElementti.val();
             laskeUusiHinta(hintaElementti, keskihankintahinta, myyntikate);
         });
-        $(myyntikateElementti).on("focusout", function (event) {
-            event.preventDefault();
-            var myyntikate = myyntikateElementti.val();
-            laskeUusiHinta(hintaElementti, keskihankintahinta, myyntikate);
-        });
+        // jos otetaan käyttöön, pitää estää, ettei 0 katteet päivity aina.
+        //$(myyntikateElementti).on("focusout", function (event) {
+        //    event.preventDefault();
+        //    var myyntikate = myyntikateElementti.val();
+        //    laskeUusiHinta(hintaElementti, keskihankintahinta, myyntikate);
+        //});
     });
 });
