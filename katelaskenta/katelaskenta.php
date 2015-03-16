@@ -11,6 +11,9 @@ else
     exit;
 
 include "_funktiot.php";
+
+echo '<pre>'.print_r($_POST, 1).'</pre>';
+
 /**
  * Seuraavat kaksi if-lausetta liittyv‰t poistetut valintaan tuotteita
  * hakiessa.
@@ -397,43 +400,45 @@ if ($verkkokauppa == "") {
 
 /**
  * REFACTOR: Mik‰ kumma on verkkokauppa?
+ * Poistetaan jos verkkokauppa j‰‰ ylim‰‰r‰iseksi, eik‰ sill‰
+ * ole merkityst‰ t‰ss‰ tapauksessa.
  */
-if ($verkkokauppa != "") {
-    if ($osasto != "") {
-        $lisa .= "and tuote.osasto = '$osasto' ";
-        $ulisa .= "&osasto=$osasto";
-    }
-    if ($try != "") {
-        $lisa .= "and tuote.try = '$try' ";
-        $ulisa .= "&try=$try";
-    }
-    if ($tuotemerkki != "") {
-        $lisa .= "and tuote.tuotemerkki = '$tuotemerkki' ";
-        $ulisa .= "&tuotemerkki=$tuotemerkki";
-    }
-}
+//if ($verkkokauppa != "") {
+//    if ($osasto != "") {
+//        $lisa .= "and tuote.osasto = '$osasto' ";
+//        $ulisa .= "&osasto=$osasto";
+//    }
+//    if ($try != "") {
+//        $lisa .= "and tuote.try = '$try' ";
+//        $ulisa .= "&try=$try";
+//    }
+//    if ($tuotemerkki != "") {
+//        $lisa .= "and tuote.tuotemerkki = '$tuotemerkki' ";
+//        $ulisa .= "&tuotemerkki=$tuotemerkki";
+//    }
+//}
 
 $yhtiot = hae_yhtiot();
+// REFACTOR: Sort muuttuja ilmeisesti urlista saatava paremetri.
+// Poistetaan jos t‰ll‰ ei tee mit‰‰n.
+// 
+//if (isset($sort) and $sort != '') {
+//    $sort = trim(mysql_real_escape_string($sort));
+//}
+//
+//if (!isset($sort)) {
+//    $sort = '';
+//}
+//
+//if ($sort == 'asc') {
+//    $sort = 'desc';
+//    $edsort = 'asc';
+//} else {
+//    $sort = 'asc';
+//    $edsort = 'desc';
+//}
 
-if (isset($sort) and $sort != '') {
-    $sort = trim(mysql_real_escape_string($sort));
-}
 
-if (!isset($sort)) {
-    $sort = '';
-}
-
-if ($sort == 'asc') {
-    $sort = 'desc';
-    $edsort = 'asc';
-} else {
-    $sort = 'asc';
-    $edsort = 'desc';
-}
-
-if (!isset($submit_button)) {
-    $submit_button = '';
-}
 
 /**
  * Seuraava if l‰hett‰‰ hakukyselyn tietokantaan.
@@ -441,6 +446,9 @@ if (!isset($submit_button)) {
  * Lis‰ksi if-lohkon sis‰ll‰ k‰sitell‰‰n tuotteiden tulostus omassa
  * if-lohkossa. Jos tuotteita ei lˆydy yht‰‰n, tulostetaan siit‰ ilmoitus.
  */
+if (!isset($submit_button)) {
+    $submit_button = '';
+}
 if ($submit_button != '' and ( $lisa != '' or $lisa_parametri != '')) {
 
     // REAFACOR: Poistetaan allaoleva koodinp‰tk‰ jos j‰‰ tarpeettomaksi.
@@ -526,7 +534,14 @@ if ($submit_button != '' and ( $lisa != '' or $lisa_parametri != '')) {
 
     $template = array();
     $template["tuotteet"] = array();
-
+    
+   
+   
+    $template["edsort"] = (isset($edsort) ? $edsort : "");    
+    $template["ojarj"] = (isset($ojarj) ? $orarj : "");
+    $template["ulisa"] = (isset($ulisa) ? $ulisa : "");
+    $template["variaatio_query_param"] = (isset($variaatio_query_param) ? $variaatio_query_param : "");
+    
     // Jos tuotteita ei lˆydy, tulostetaan ilmoitus
     if (mysql_num_rows($result) <= 0)
         $template["ilmoitus"] = t("Yht‰‰n tuotetta ei lˆytynyt");
@@ -546,7 +561,7 @@ if ($submit_button != '' and ( $lisa != '' or $lisa_parametri != '')) {
         $rows = lisaa_vastaavat_ja_korvaavat_tuotteet($result, $rows, $haetaan_perheet);
 
         // Valmistelee hakutulokset templatea varten.
-
+        
         $template["tuotteet"] = valmistele_hakutulokset($rows, $verkkokauppa, $hae_ja_selaa_row);
         $template["yhtio"] = $yhtiorow;
     }

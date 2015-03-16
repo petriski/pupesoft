@@ -259,7 +259,7 @@ function valmistele_hakutulokset($tuotteet, $verkkokauppa, $hae_ja_selaa_row) {
                 strtoupper($arvo["status"]) == "P") {
             $tuotteet[$avain]["nimitys"] .= "<br> * " . t("Poistuva tuote");
         }
-        
+
         $tuotteet[$avain]["myyntihinta"] = hintapyoristys($arvo["myyntihinta"], 2);
 
         // Laske myyntihinta keskihankintahinnasta ja tallenna se
@@ -269,7 +269,6 @@ function valmistele_hakutulokset($tuotteet, $verkkokauppa, $hae_ja_selaa_row) {
         // T‰m‰ vaikuttaa siis tuotteisiin, johon sit‰ ei ole m‰‰ritetty
         // tietokantamuutosten j‰lkeen tai kate on merkitty, ettei sit‰
         // ylip‰‰t‰ns‰ laskenta.
-        
         // REFACTOR: Saattoi j‰‰d‰ ylim‰‰r‰iseksi. Katso myˆhemmin kun on
         // saatu palautetta.
 //        if ($arvo["katelaskenta"] != '0' || $arvo["katelaskenta"] != NULL) {
@@ -793,4 +792,140 @@ function hae_tuotteet_kysely($args) {
             LIMIT 500";
 
     return pupe_query($query);
+}
+
+function piirra_tuotehaku(
+$verkkokauppa, $hae_ja_selaa_row, $toim_kutsu, $kukarow, $ostoskori, $valittu_tarjous_tunnus, $tultiin, $tuotenumero, $toim_tuoteno, $poischeck, $extrapoischeck, $nimitys, $alkuperaisnumero, $lisacheck, $orginaaalit, $ptlcheck, $saldotoncheck) {
+
+    if ($verkkokauppa == "") {
+        if ($hae_ja_selaa_row['selite'] == 'B') {
+            echo "<div>";
+        }
+
+        echo "<form action = '?toim_kutsu=$toim_kutsu' method = 'post'>";
+        echo "<input type='hidden' name='tilausnumero' value='$kukarow[kesken]'>";
+        echo "<input type='hidden' name='ostoskori' value='$ostoskori'>";
+        echo "<input type='hidden' name='valittu_tarjous_tunnus' value='$valittu_tarjous_tunnus'>";
+
+        if (!isset($tultiin)) {
+            $tultiin = '';
+        }
+
+        if ($tultiin == "futur") {
+            echo " <input type='hidden' name='tultiin' value='$tultiin'>";
+        }
+
+        echo "<input type='hidden' name='ostoskori' value='$ostoskori'>";
+
+        if ($hae_ja_selaa_row['selite'] == 'B') {
+            echo "<fieldset>";
+            echo "<legend>", t("Pikahaku"), "</legend>";
+        }
+
+        echo "<table style='display:inline-table; padding-right:4px; padding-top:4px;' valign='top'>";
+
+        if ($hae_ja_selaa_row['selite'] == 'B') {
+            echo "<tr><th>" . t("Tuotenumero") . "</th><td><input type='text' size='25' name='tuotenumero' id='tuotenumero' value = '$tuotenumero'></td>";
+            echo "<th>" . t("Toim tuoteno") . "</th><td><input type='text' size='25' name = 'toim_tuoteno' id='toim_tuoteno' value = '$toim_tuoteno'></td>";
+
+            if ($kukarow["extranet"] != "") {
+                echo "<th>" . t("Tarjoustuotteet") . "</th>";
+            } else {
+                echo "<th>" . t("Poistetut") . "</th>";
+            }
+            echo "<td><input type='checkbox' name='poistetut' id='poistetut' $poischeck></td>";
+
+            if ($kukarow["extranet"] != "" and $kukarow['asema'] == "NE") {
+                echo "<th>" . t("N‰yt‰ poistetut") . "</th><td><input type='checkbox' name='extrapoistetut' id='extrapoistetut' $extrapoischeck></td>";
+            }
+
+            echo "</tr>";
+
+            echo "<tr><th>" . t("Nimitys") . "</th><td><input type='text' size='25' name='nimitys' id='nimitys' value = '$nimitys'></td>";
+
+            if ($orginaaalit) {
+                echo "<th>" . t("Alkuper‰isnumero") . "</th><td><input type='text' size='25' name = 'alkuperaisnumero' id='alkuperaisnumero' value = '$alkuperaisnumero'></td>";
+            } else {
+                echo "<th>&nbsp;</th><td>&nbsp;</td>";
+            }
+
+            echo "<th>" . t("Lis‰tiedot") . "</th><td><input type='checkbox' name='lisatiedot' id='lisatiedot' $lisacheck></td>";
+            echo "</tr>";
+        } else {
+            echo "<tr><th>" . t("Tuotenumero") . "</th><td><input type='text' size='25' name='tuotenumero' id='tuotenumero' value = '$tuotenumero'></td></tr>";
+            echo "<tr><th>" . t("Toim tuoteno") . "</th><td><input type='text' size='25' name = 'toim_tuoteno' id='toim_tuoteno' value = '$toim_tuoteno'></td></tr>";
+
+            if ($orginaaalit) {
+                echo "<tr><th>" . t("Alkuper‰isnumero") . "</th><td><input type='text' size='25' name = 'alkuperaisnumero' id='alkuperaisnumero' value = '$alkuperaisnumero'></td></tr>";
+            }
+
+            echo "<tr><th>" . t("Nimitys") . "</th><td><input type='text' size='25' name='nimitys' id='nimitys' value = '$nimitys'></td></tr>";
+            if ($kukarow["extranet"] != "") {
+                echo "<tr><th>" . t("Tarjoustuotteet") . "</th>";
+            } else {
+                echo "<tr><th>" . t("Poistetut") . "</th>";
+            }
+            echo "<td><input type='checkbox' name='poistetut' id='poistetut' $poischeck></td></tr>";
+            echo "<tr><th>" . t("Lis‰tiedot") . "</th><td><input type='checkbox' name='lisatiedot' id='lisatiedot' $lisacheck></td></tr>";
+        }
+
+        if ($kukarow['extranet'] == "" and $verkkokauppa == "") {
+            echo "<tr>";
+            echo "<th>" . t("Piilota tuoteperherakenne") . "</th>";
+            echo "<td><input type='checkbox' name='piilota_tuoteperheen_lapset' $ptlcheck></td>";
+            echo "</tr>";
+            echo "<tr>";
+            echo "<th>" . t("N‰yt‰ vain saldolliset tuotteet") . "</th>";
+            echo "<td><input type='checkbox' name='saldotonrajaus' $saldotoncheck></td>";
+            echo "</tr>";
+        }
+
+        echo "</table><br/>";
+
+        if ($hae_ja_selaa_row['selite'] == 'B') {
+            echo "</fieldset>";
+
+            echo "<fieldset>";
+            echo "<legend>", t("Rajaa tuotteita"), "</legend>";
+            echo "<span class='info'>", t("Aloita valitsemalla osasto / tuoteryhm‰"), "</span>";
+        }
+
+        echo "<br/>";
+
+        // Monivalintalaatikot (osasto, try tuotemerkki...)
+        // M‰‰ritell‰‰n mitk‰ latikot halutaan mukaan
+        if (trim($hae_ja_selaa_row['selitetark']) != '') {
+            $monivalintalaatikot = explode(",", $hae_ja_selaa_row['selitetark']);
+
+            if (trim($hae_ja_selaa_row['selitetark_2'] != '')) {
+                $monivalintalaatikot_normaali = explode(",", $hae_ja_selaa_row['selitetark_2']);
+            } else {
+                $monivalintalaatikot_normaali = array();
+            }
+        } else {
+            // Oletus
+            $monivalintalaatikot = array("OSASTO", "TRY", "TUOTEMERKKI", "MALLI", "MALLI/MALLITARK", "<br>DYNAAMINEN_TUOTE");
+            $monivalintalaatikot_normaali = array();
+        }
+
+        /**
+         * REFACTOR: Include tiedosto joudutaan hakemaan toisesta kansiosta.
+         */
+        require "../tilauskasittely/monivalintalaatikot.inc";
+
+        if ($hae_ja_selaa_row['selite'] == 'B') {
+            echo "</fieldset>";
+        }
+
+        echo "<input type='submit' name='submit_button' id='submit_button' class='hae_btn' value = '" . t("Etsi") . "'></form>";
+        echo "&nbsp;<form action = '?toim_kutsu=$toim_kutsu' method = 'post'>
+      <input type='hidden' name='tilausnumero' value='$kukarow[kesken]'>
+      <input type='hidden' name='valittu_tarjous_tunnus' value='$valittu_tarjous_tunnus'>
+      <input type='submit' name='submit_button2' id='submit_button2' value = '" . t("Tyhjenn‰") . "'>
+      </form>";
+
+        if ($hae_ja_selaa_row['selite'] == 'B') {
+            echo "</div>";
+        }
+    }
 }

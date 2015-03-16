@@ -1,5 +1,7 @@
 <?php if (!array_key_exists("ilmoitus", $template)) { ?>
-    <form id="lomake-katelaskenta-hakutulokset">
+    <form id="lomake-katelaskenta-hakutulokset" 
+          action="?submit_button=1&sort=<?php echo $template["edsort"]; ?>&ojarj=<?php echo $template["ojarj"] . $template["ulisa"] . $template["variaatio_query_param"]; ?>" 
+          method="post">
         <table id="katelaskenta-hakutulokset">
             <!-- 
                 TFOOT elementti taulukon viimeinen rivi, jossa toiminnot
@@ -31,17 +33,18 @@
                 // Käydään hakutulokset läpi.
                 // $template muuttuja on alustettu tämän templaten ulkopuolella.
                 foreach ($template["tuotteet"] as $avain => &$tuote) {
+                    $tuotenumero = $tuote["tuoteno"];
                     ?>
 
                     <tr class="aktiivi" id="rivi_<?php echo trim($tuote["tuoteno"]); ?>" data-kehahinta="<?php echo $tuote["kehahin"]; ?>">
-                        <td><input type="checkbox" checked="checked" name="valitutrivit[]" value="<?php echo $tuote["tuoteno"]; ?>" /></td>
+                        <td><input type="checkbox" checked="checked" name="valitutrivit['<?php echo $tuotenumero; ?>']" value="<?php echo $tuote["tuoteno"]; ?>" /></td>
                         <td><?php echo $tuote["tuoteno"]; ?></td>
                         <td><?php echo $tuote["nimitys"]; ?></td>
                         <td><?php echo $tuote["osasto"] . "<br />" . $tuote["try"]; ?></td>
                         <td><span class="hinta" style="vertical-align: baseline;"><?php echo $tuote["myyntihinta"]; ?></span> <?php echo $template["yhtio"]["valkoodi"]; ?></td>
                         <?php hae_ja_piirra_saldo($tuote, $yhtiot, $oleastuote); // funktio katelaskenta.php -tiedostossa. ?>
-                        <td><input type="text" name="valitutkateprosentit[]" value="<?php echo $tuote["myyntikate"]; ?>" /></td>
-                        <td><input type="text" name="valituthinnat[]" value="<?php echo $tuote["katelaskenta"]; ?>" /></td>
+                        <td><input type="text" name="valitutkateprosentit['<?php echo $tuotenumero; ?>']" value="<?php echo $tuote["myyntikate"]; ?>" /></td>
+                        <td><input type="text" name="valituthinnat['<?php echo $tuotenumero; ?>']" value="<?php echo $tuote["katelaskenta"]; ?>" /></td>
                         <td><a href="#">Laske</a></td>
                     </tr>
 
@@ -51,8 +54,8 @@
         </table>
 
         <input type="submit" 
-               name="submit-lomake-katelaskenta-hakutulokset" 
-               id="submit-lomake-katelaskenta-hakutulokset" 
+               name="submit-katelaskenta" 
+               id="submit-katelaskenta" 
                value="Laske kaikki ja tallenna" />
     </form>
 <?php } else { // array_key_exists() tarkistuksen else osio ?>
