@@ -621,7 +621,6 @@ if ($submit_button != '' and ( $lisa != '' or $lisa_parametri != '')) {
     }
     // _hakutulokset.php template k‰ytet‰‰n tulostaulukon tulostamiseen.
     require_once 'template.katelaskenta.php';
-    require_once 'scripts.katelaskenta.php';
 }
 
 

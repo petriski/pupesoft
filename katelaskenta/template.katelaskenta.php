@@ -83,3 +83,5 @@
 <?php } else { // array_key_exists() tarkistuksen else osio ?>
     <p><font class="message"><?php echo $template["ilmoitus"]; ?></font><p>
     <?php };  // array_key_exists() loppu ?>
+    
+<script src="scripts.katelaskenta.js" type="text/javascript"></script>
