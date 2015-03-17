@@ -129,29 +129,32 @@ function luo_katelaskenta_update_komennot($taulukko) {
         // Jos komennossa on 0 merkki jossakin kohti, ei hintamuutoksia
         // tehd‰. Tallennetaan vain komento talteen tietokantaan.
         if(mb_strrchr($rivin_komennot, 0)) {
-            $update_kysely .= "tuote.katelaskenta = {$rivin_komennot} ";    
+            $update_kysely .= "katelaskenta = {$rivin_komennot} ";    
         } else {
             // Jos komennossa m, lasketaan myyntihinta.
             if(mb_strrchr($rivin_komennot, "m")) {
                 $uusi_hinta = lisaa_hintaan_kate($rivin_keskihankintahinta, $rivin_kateprosentti);
-                $update_kysely .= "tuote.myyntihinta = {$uusi_hinta}, ";
+                $uusi_hinta = hintapyoristys($uusi_hinta, 2);
+                $update_kysely .= "myyntihinta = {$uusi_hinta}, ";
             }
             // Jos komennossa y, lasketaan myymalahinta.
             if(mb_strrchr($rivin_komennot, "y")) {
                 $uusi_hinta = lisaa_hintaan_kate($rivin_keskihankintahinta, $rivin_kateprosentti);
-                $update_kysely .= "tuote.myymalahinta = {$uusi_hinta}, ";
+                $uusi_hinta = hintapyoristys($uusi_hinta, 2);
+                $update_kysely .= "myymalahinta = {$uusi_hinta}, ";
             }
             // Jos komennossa n, lasketaan nettohinta.
             if(mb_strrchr($rivin_komennot, "n")) {
                 $uusi_hinta = lisaa_hintaan_kate($rivin_keskihankintahinta, $rivin_kateprosentti);
-                $update_kysely .= "tuote.nettohinta = {$uusi_hinta}, ";
+                $uusi_hinta = hintapyoristys($uusi_hinta, 2);
+                $update_kysely .= "nettohinta = {$uusi_hinta}, ";
             }
             
             // Lis‰t‰‰n kyselyyn pakolliset kent‰t, jotka tulee jokaiseen
             // komennon lopuksi mukaan.
-            $update_kysely .= "tuote.katelaskenta = {$rivin_komennot}, ";
-            $update_kysely .= "tuote.myyntikate = {$rivin_kateprosentti}, ";
-            $update_kysely .= "tuote.hintamuutospvm = NOW() ";
+            $update_kysely .= "katelaskenta = '{$rivin_komennot}', ";
+            $update_kysely .= "myyntikate = {$rivin_kateprosentti}, ";
+            $update_kysely .= "hintamuutospvm = NOW() ";
         }
         // Kyselyn where -ehdon lis‰‰minen.
         $update_kysely .= $sql_komento_loppu . $rivin_tunnus;
@@ -209,8 +212,9 @@ function tallenna_valitut_katemuutokset($data) {
     $update_komennot = array();
     $update_komennot = luo_katelaskenta_update_komennot($yhdistetyt_tuoterivit["kunnossa"]);
     
+    
     // Ajetaan p‰ivityskomennot tietokantaan.
-    foreach($updatekomennot as $updatesql) {
+    foreach($update_komennot as $updatesql) {
         pupe_query($updatesql);        
     }
     
