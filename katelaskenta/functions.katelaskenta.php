@@ -107,6 +107,13 @@ function tarkista_katelaskenta_syotteet($taulukko) {
     return $taulukko;
 }
 
+/**
+ * Luo parametrina annetusta taulukosta sql-update komennot
+ * uusien hintojen p‰ivitt‰mist‰ varten.
+ *
+ * Taulukon rakenne on seuraavanlainen:
+ * [avain] => [tunnus, kateprosentti, keskihankintahinta, komento]
+ */
 function luo_katelaskenta_update_komennot($taulukko) {
     // Luodaan update-komennoille taulukko, johon kaikki komennot
     // kootaan.
@@ -166,6 +173,15 @@ function luo_katelaskenta_update_komennot($taulukko) {
     return $update_komennot;
 }
 
+/**
+ * P‰‰asiallinen funktio uusien katetietojen tallentamiseen.
+ *
+ * Tarkistetaan ja siistit‰‰n syˆtetyt tiedot, luodaan p‰ivitys
+ * komennot tietokantaa varten ja p‰ivitet‰‰n muutokset.
+ *
+ * Jos virheit‰ ilmenee, palautetaan ne taulukkona virheriveineen.
+ * Kunnossa olleet rivit tallennetaan siit‰ huolimatta.
+ */
 function tallenna_valitut_katemuutokset($data) {
     
     // Luodaan yhdistelm‰taulukko, jossa eritell‰‰n virheelliset
