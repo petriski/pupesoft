@@ -38,6 +38,7 @@ $(document).ready(function () {
     laskeKaikkiNappi.on("click", function (event) {
         event.preventDefault();
         var myyntikate = viimeinenTaulukonRivi.find("td:nth-child(3) input").val();
+        var laskentakomennot = viimeinenTaulukonRivi.find("td:nth-child(4) input").val();
         
         if(onkoVirheellinenMyyntikate(myyntikate)) {
             return true;
@@ -52,8 +53,10 @@ $(document).ready(function () {
                 var keskihankintahinta = $(this).data("kehahinta");
                 var flag = laskeUusiHinta(hintaElementti, keskihankintahinta, myyntikate);
                 
-                if(flag !== false)
+                if(flag !== false) {
                     $(this).find("td:nth-child(8) input").val(myyntikate);
+                    $(this).find("td:nth-child(9) input").val(laskentakomennot);
+                }
             }
         });
     });

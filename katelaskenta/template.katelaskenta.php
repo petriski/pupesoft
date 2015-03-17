@@ -47,7 +47,7 @@
                     <th>Myyntihinta</th>
                     <th>Myytävissä</th>
                     <th>Kate %</th>         
-                    <th>Hinnat</th>                
+                    <th style="text-transform: none;">Hinnat <br/>m|y|n|0</th>                
                     <th>&nbsp</th>
                 </tr>
                 <?php
@@ -78,7 +78,7 @@
         <input type="submit" 
                name="submit-katelaskenta" 
                id="submit-katelaskenta" 
-               value="Laske kaikki ja tallenna" />
+               value="Laske ja talleta valitut" />
     </form>
 <?php } else { // array_key_exists() tarkistuksen else osio ?>
     <p><font class="message"><?php echo $template["ilmoitus"]; ?></font><p>
