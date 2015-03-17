@@ -1,3 +1,15 @@
+<?php
+/*
+ * template.katelaskenta.php
+ *
+ * Template tiedosto katelaskenta toiminnolle. Huolehtii tietojen
+ * tulostamisesta sivulle.
+ *
+ * Toistaiseksi tiedosto tulostaa vain hakutulostaulukon. Hakutoimintoon
+ * tarkoitettu lomake piirretään kontrolleri -tiedostosta, koska sitä
+ * ei ole vielä käännetty template muotoon.
+ */
+?>
 <?php if(isset($template["flash_success"])) { ?>
     <p style="color: green; font-weight: bold;"><?php echo $template["flash_success"]; ?></p>
 <?php } ?>
@@ -71,4 +83,3 @@
 <?php } else { // array_key_exists() tarkistuksen else osio ?>
     <p><font class="message"><?php echo $template["ilmoitus"]; ?></font><p>
     <?php };  // array_key_exists() loppu ?>
-    <script src="katelaskenta.js" type="text/javascript"></script>

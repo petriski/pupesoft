@@ -1,5 +1,12 @@
-// A $( document ).ready() block.
-// REFACTOR: Kommentoi mitä tapahtuu tarkemmin. Laita loogiseen järjestykseen.
+<?php
+/*
+ * scripts.katelaskenta.php
+ *
+ * Tiedosto sisältää javascript koodit käyttöliittymän toimintoja varten,
+ * jotka sijaitsevat template.katelaskenta.php tiedostossa.
+ */
+?>
+ <script type="text/javascript">
 $(document).ready(function () {
 
     // Haetaan muuttujaan hakutulosten taulukko
@@ -114,3 +121,4 @@ $(document).ready(function () {
         //});
     });
 });
+</script>

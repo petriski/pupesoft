@@ -1,5 +1,36 @@
 <?php
-
+/* 
+ * controller.katelaskenta.php
+ *
+ * Kontrolleri -tiedoston tehtävä on hoitaa tietojen alustaminen
+ * katelaskenta toimintoa varten. Myös määrittää oikeat toimenpiteet
+ * kun tietoja lähetetään katelaskenta-toiminnosta käsin.
+ *
+ * Ohjelmakoodissa on vielä osioita entisestä tiedostota, josta pohja
+ * on otettu. Osittain pohjaa on refaktoroitu mutta isommat osiot,
+ * joissa ollut enemmän työtä, on jätetty ennalleen. Osa entisestä
+ * koodista siirretty functions.php tiedostoon.
+ *
+ * Kontrollerti ohjaa kaikki tietojen tulostukset template.katelaskenta.php
+ * tiedostolle. Template tiedostossa tulostetaan toistaiseksi vain
+ * hakutulokset. Hakulaatikko piirretään vielä entisillä koodeilla sen
+ * monimutkaisuuden takia.
+ *
+ * Liittyvät tiedostot:
+ *
+ * /controller.katelaskenta.php
+ * /functions.katelaskenta.php
+ * /functions.php
+ * /scripts.katelaskenta.js
+ * /template.katelaskenta.php
+ * /tietokantamuutokset-katelaskenta.sql
+ *
+ * Tiedossa olevat riippuvuudet muualle
+ *
+ * ../inc/functions.php
+ * ../tilauskasittely/monivalintalaatikot.inc
+ *
+ */
 ///* Tämä skripti käyttää slave-tietokantapalvelinta *///
 $useslave = 1;
 
@@ -589,7 +620,8 @@ if ($submit_button != '' and ( $lisa != '' or $lisa_parametri != '')) {
         $template["yhtio"] = $yhtiorow;
     }
     // _hakutulokset.php template käytetään tulostaulukon tulostamiseen.
-    require_once '_hakutulokset.php';
+    require_once 'template.katelaskenta.php';
+    require_once 'scripts.katelaskenta.php';
 }
 
 

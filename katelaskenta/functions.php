@@ -1,9 +1,14 @@
 <?php
 
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * functions.php
+ *
+ * Sisältää entistä koodia, jota on jaettu pienempiin funktioihin.
+ * Tarvitaan, jotta tietyt toiminnot katelaskennan haku osiossa toimii.
+ * Varmuutta ei ole mitä kaikkea nämä tekevät ja mitä ei tarvita.
+ * Siistitään tiedostoa kun tulee tarpeellisesti.
+ *
+ * Katelaskennan omat funktiot ovat functions.katelaskenta.php -tiedostossa.
  */
 
 /**

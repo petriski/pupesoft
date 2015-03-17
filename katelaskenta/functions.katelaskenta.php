@@ -1,4 +1,12 @@
 <?php
+/*
+ * functions.katelaskenta.php
+ *
+ * Tiedosto pitää sisällään functioita katelaskenta toiminnon
+ * suorittamiseen.
+ */
+
+ 
 /**
  * Funktio laskee uuden hinnan kateprosentilla.
  *
