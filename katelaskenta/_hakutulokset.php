@@ -1,3 +1,12 @@
+<?php if(isset($template["flash_success"])) { ?>
+    <p style="color: green; font-weight: bold;"><?php echo $template["flash_success"]; ?></p>
+<?php } ?>
+
+<?php if(isset($template["flash_error"])) { ?>
+    <p style="color: red; font-weight: bold;"><?php echo $template["flash_error"]; ?></p>
+<?php } ?>
+
+
 <?php if (!array_key_exists("ilmoitus", $template)) { ?>
     <form id="lomake-katelaskenta-hakutulokset" 
           action="?submit_button=1&sort=<?php echo $template["edsort"]; ?>&ojarj=<?php echo $template["ojarj"] . $template["ulisa"] . $template["variaatio_query_param"]; ?>" 

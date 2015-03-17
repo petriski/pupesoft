@@ -10,12 +10,31 @@ elseif (@include "parametrit.inc")
 else
     exit;
 
-include "_funktiot.php";
+// Haetaan _funktiot.php -tiedosto, jossa katelaskennan toimintalogiikka.
+include "functions.php";
+include "functions.katelaskenta.php";
+
+// Tempalte array on luotu sivupohjan tietoja varten.
+$template = array();
+
+// Jos on painettu "Laske kaikki ja tallenna" -nappia, käydään lähetetyt
+// tiedot läpi ja tallennetaan muutokset tietokantaan. Mikäli virheitä
+// ilmenee tiedoissa, virheelliset rivit palautetaan taulukkona.
 $submit_katelaskenta = (isset($_POST["submit-katelaskenta"]) ? $_POST["submit-katelaskenta"] : "");
+
 if(strlen($submit_katelaskenta) > 0) {
+    // Tallennetaan post-tiedot omaan muuttujaan
     $post_array = $_POST;
-    $virheet = tallenna_katemuutokset($post_array);
-    echo '<pre>' . print_r($virheet, 1) . '</pre>';
+    // Tallennetaan katemuutokset.
+    $virheelliset_rivit = tallenna_valitut_katemuutokset($post_array);
+    
+    //Tiedot tallennettu onnistuneesti, ilmoitus käyttäjälle
+    $template["flash_success"] = "Katemuutokset tallennettu onnistuneesti.";
+    
+    // Jos virheellisiä rivejä ilmeni, tehdään niistä ilmoitus käyttäjälle.
+    $virheiden_lkm = count($virheelliset_rivit);
+    if($virheiden_lkm > 0)
+        $template["flash_error"] = "Lähetetyissä tiedoissa oli {$virheiden_lkm} virhettä.";
 }
 
 /**
@@ -536,7 +555,7 @@ if ($submit_button != '' and ( $lisa != '' or $lisa_parametri != '')) {
 //    $result = hae_tuotteet_kysely($kyselyn_argumentit);
 
 
-    $template = array();
+    
     $template["tuotteet"] = array();
     
    

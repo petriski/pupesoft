@@ -38,15 +38,15 @@ $(document).ready(function () {
         
         $.each(kaikkiTuoterivit, function () {
             
-            var valintaElementti = $(this).find("td:first-child input[type=checkbox]");
+            var valintaElementti = $(this).find("td:nth-child(2) input[type=checkbox]");
 
             if (valintaElementti.attr("checked") === "checked") {
-                var hintaElementti = $(this).find("td:nth-child(5) span.hinta");
+                var hintaElementti = $(this).find("td:nth-child(6) span.hinta");
                 var keskihankintahinta = $(this).data("kehahinta");
                 var flag = laskeUusiHinta(hintaElementti, keskihankintahinta, myyntikate);
                 
                 if(flag !== false)
-                    $(this).find("td:nth-child(7) input").val(myyntikate);
+                    $(this).find("td:nth-child(8) input").val(myyntikate);
             }
         });
     });
