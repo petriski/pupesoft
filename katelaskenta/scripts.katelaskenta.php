@@ -17,7 +17,7 @@ $(document).ready(function () {
     var valitseKaikkiCheckbox = hakutuloksetTaulukko.find("tfoot tr td:first-child input[type=checkbox]");
 
     // Haetaan muuttujaan kaikkien tulosrivien valinta sarakkeen checkbox
-    var kaikkiValitsimetCheckboxes = hakutuloksetTaulukko.find("tbody tr td:first-child input[type=checkbox]");
+    var kaikkiValitsimetCheckboxes = hakutuloksetTaulukko.find("tbody tr td:nth-child(2) input[type=checkbox]");
 
     var kaikkiTuoterivit = hakutuloksetTaulukko.find("tbody tr");    
     var viimeinenTaulukonRivi = hakutuloksetTaulukko.find("tfoot tr");
