@@ -553,7 +553,8 @@ if ($submit_button != '' and ( $lisa != '' or $lisa_parametri != '')) {
             tuote.epakurantti100pvm,
             tuote.kehahin,
             tuote.myyntikate,
-            tuote.katelaskenta,
+            tuote.myymalakate,
+            tuote.nettokate,
             (SELECT group_concat(distinct tuotteen_toimittajat.toim_tuoteno order by tuotteen_toimittajat.tunnus separator '<br>') FROM tuotteen_toimittajat use index (yhtio_tuoteno) WHERE tuote.yhtio = tuotteen_toimittajat.yhtio and tuote.tuoteno = tuotteen_toimittajat.tuoteno) toim_tuoteno,
             tuote.sarjanumeroseuranta,
             tuote.status
@@ -615,9 +616,9 @@ if ($submit_button != '' and ( $lisa != '' or $lisa_parametri != '')) {
         $rows = lisaa_vastaavat_ja_korvaavat_tuotteet($result, $rows, $haetaan_perheet);
 
         // Valmistelee hakutulokset templatea varten.
-        
         $template["tuotteet"] = valmistele_hakutulokset($rows, $verkkokauppa, $hae_ja_selaa_row);
         $template["yhtio"] = $yhtiorow;
+        
     }
     // _hakutulokset.php template k‰ytet‰‰n tulostaulukon tulostamiseen.
     require_once 'template.katelaskenta.php';

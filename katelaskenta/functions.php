@@ -153,7 +153,8 @@ function tuoteselaushaku_vastaavat_korvaavat($tvk_taulu, $tvk_korvaavat, $tvk_tu
                 tuote.epakurantti100pvm,
                 tuote.kehahin,
                 tuote.myyntikate,
-                tuote.katelaskenta,
+                tuote.nettokate,
+                tuote.myymalakate,
                 (SELECT group_concat(distinct tuotteen_toimittajat.toim_tuoteno ORDER BY tuotteen_toimittajat.tunnus separator '<br>') FROM tuotteen_toimittajat use index (yhtio_tuoteno) WHERE tuote.yhtio = tuotteen_toimittajat.yhtio and tuote.tuoteno = tuotteen_toimittajat.tuoteno) toim_tuoteno,
                 tuote.sarjanumeroseuranta
                 FROM {$tvk_taulu}
@@ -215,7 +216,8 @@ function tuoteselaushaku_tuoteperhe($esiisatuoteno, $tuoteno, $isat_array, $kaik
                   tuote.epakurantti100pvm,
                   tuote.kehahin,
                   tuote.myyntikate,
-                  tuote.katelaskenta,
+                  tuote.nettokate,
+                  tuote.myymalakate,
                   (SELECT group_concat(distinct tuotteen_toimittajat.toim_tuoteno order by tuotteen_toimittajat.tunnus separator '<br>') FROM tuotteen_toimittajat use index (yhtio_tuoteno) WHERE tuote.yhtio = tuotteen_toimittajat.yhtio and tuote.tuoteno = tuotteen_toimittajat.tuoteno) toim_tuoteno,
                   tuote.sarjanumeroseuranta,
                   tuoteperhe.tyyppi
@@ -266,6 +268,9 @@ function valmistele_hakutulokset($tuotteet, $verkkokauppa, $hae_ja_selaa_row) {
         }
 
         $tuotteet[$avain]["myyntihinta"] = hintapyoristys($arvo["myyntihinta"], 2);
+        $tuotteet[$avain]["myymalahinta"] = hintapyoristys($arvo["myymalahinta"], 2);
+        $tuotteet[$avain]["nettohinta"] = hintapyoristys($arvo["nettohinta"], 2);
+        $tuotteet[$avain]["kehahin"] = hintapyoristys($arvo["kehahin"], 2);
 
         // Laske myyntihinta keskihankintahinnasta ja tallenna se
         // uuteen sarakkeeseen myöhempää käyttöä varten.
@@ -780,7 +785,8 @@ function hae_tuotteet_kysely($args) {
             tuote.epakurantti100pvm,
             tuote.kehahin,
             tuote.myyntikate,
-            tuote.katelaskenta,
+            tuote.nettokate,
+            tuote.myymalakate,
             (SELECT group_concat(distinct tuotteen_toimittajat.toim_tuoteno order by tuotteen_toimittajat.tunnus separator '<br>') FROM tuotteen_toimittajat use index (yhtio_tuoteno) WHERE tuote.yhtio = tuotteen_toimittajat.yhtio and tuote.tuoteno = tuotteen_toimittajat.tuoteno) toim_tuoteno,
             tuote.sarjanumeroseuranta,
             tuote.status
