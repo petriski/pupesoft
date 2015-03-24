@@ -32,12 +32,12 @@
                 <tr>
                     <td><input type="checkbox" checked="checked" name="valitutrivit[]" value="" /></td>
                     <td colspan="4">&nbsp;</td>
-                    <td><input type="text" name="myyntikate['<?php echo $tuotetunnus; ?>']" value="<?php echo $tuote["myyntikate"]; ?>" /></td>
                     <td>&nbsp;</td>
-                    <td><input type="text" name="myymalakate['<?php echo $tuotetunnus; ?>']" value="<?php echo $tuote["myymalakate"]; ?>" /></td>
+                    <td><input type="text" name="myyntikate['<?php echo $tuotetunnus; ?>']" value="<?php echo $tuote["myyntikate"]; ?>" size=4 /></td>
                     <td>&nbsp;</td>
-                    <td><input type="text" name="nettokate['<?php echo $tuotetunnus; ?>']" value="<?php echo $tuote["nettokate"]; ?>" /></td>
+                    <td><input type="text" name="myymalakate['<?php echo $tuotetunnus; ?>']" value="<?php echo $tuote["myymalakate"]; ?>" size=4 /></td>
                     <td>&nbsp;</td>
+                    <td><input type="text" name="nettokate['<?php echo $tuotetunnus; ?>']" value="<?php echo $tuote["nettokate"]; ?>" size=4 /></td>
                     <td>&nbsp;</td>
                     <td><a href="#">Laske kaikki</a></td>
                 </tr>
@@ -50,12 +50,9 @@
                     <th>Nimitys</th>
                     <th>Osasto<br>Try</th>
                     <th>Keskihankintahinta</th>
-                    <th>Kate % - Myyntihinta</th>
-                    <th>Myyntihinta</th>
-                    <th>Kate % - Myymälähinta</th>
-                    <th>Myymälähinta</th>
-                    <th>Kate % - Nettohinta</th>
-                    <th>Nettohinta</th>
+                    <th colspan="2">Myyntihinta - Kate%</th>
+                    <th colspan="2">Myymälähinta - Kate%</th>
+                    <th colspan="2">Nettohinta - Kate%</th>
                     <th>Myytävissä</th>              
                     <th>&nbsp</th>
                 </tr>
@@ -73,12 +70,12 @@
                         <td><?php echo $tuote["nimitys"]; ?></td>
                         <td><?php echo $tuote["osasto"] . "<br />" . $tuote["try"]; ?></td>
                         <td><?php echo $tuote["kehahin"]; ?> <?php echo $template["yhtio"]["valkoodi"]; ?></td>
-                        <td><input type="text" name="myyntikate['<?php echo $tuotetunnus; ?>']" value="<?php echo $tuote["myyntikate"]; ?>" /></td>
                         <td><span class="hinta" style="vertical-align: baseline;"><?php echo $tuote["myyntihinta"]; ?></span> <?php echo $template["yhtio"]["valkoodi"]; ?></td>
-                        <td><input type="text" name="myymalakate['<?php echo $tuotetunnus; ?>']" value="<?php echo $tuote["myymalakate"]; ?>" /></td>
+                        <td><input type="text" name="myyntikate['<?php echo $tuotetunnus; ?>']" value="<?php echo $tuote["myyntikate"]; ?>" size=4 /></td>
                         <td><span class="hinta" style="vertical-align: baseline;"><?php echo $tuote["myymalahinta"]; ?></span> <?php echo $template["yhtio"]["valkoodi"]; ?></td>
-                        <td><input type="text" name="nettokate['<?php echo $tuotetunnus; ?>']" value="<?php echo $tuote["nettokate"]; ?>" /></td>
+                        <td><input type="text" name="myymalakate['<?php echo $tuotetunnus; ?>']" value="<?php echo $tuote["myymalakate"]; ?>" size=4 /></td>
                         <td><span class="hinta" style="vertical-align: baseline;"><?php echo $tuote["nettohinta"]; ?></span> <?php echo $template["yhtio"]["valkoodi"]; ?></td>
+                        <td><input type="text" name="nettokate['<?php echo $tuotetunnus; ?>']" value="<?php echo $tuote["nettokate"]; ?>" size=4 /></td>
                         <?php hae_ja_piirra_saldo($tuote, $yhtiot, $oleastuote); // funktio katelaskenta.php -tiedostossa. ?>
                         <td><a href="#">Laske</a></td>
                     </tr>

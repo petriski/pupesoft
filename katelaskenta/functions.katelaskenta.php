@@ -39,30 +39,6 @@ function tarkista_kateprosentti($kateprosentti) {
 }
 
 /**
- * Funktio siivoaa annetut laskentakomennot.
- *
- * Annetut komennot käydään merkkikerralla läpi ja niistä siivotaan
- * ylimääräiset pois. Lisäksi tarkistetaan, että komennot ova olleet
- * sallittujen joukossa.
- *
- * Palautetaan komennot merkkijonoina.
- */
-function siivoa_laskentakomennot($komennot) {
-    // Määritetään ne komennot, jotka ovat sallittuja.
-    $sallitut_komennot = array("m", "y", "n", 0);
-    // Pilkotaan merkkijono taulukoksi, jossa jokainen
-    // merkki on oma solunsa.
-    $komennot = str_split($komennot);
-    // Poistetaan taulukosta duplicaatit, jotta jokaista komentoa
-    // jää vain yksi kpl.
-    $komennot = array_unique($komennot);
-    // Poistetaan komennoista merkit, joita ei tunnisteta
-    // sallituiksi komennoiksi.
-    $komennot = array_intersect($komennot, $sallitut_komennot);
-    return join("", $komennot);
-}
-
-/**
  * Funktio tarkistaa syötteet, joita katelaskentaohjelma lähettää.
  *
  * Funktio on kooste pienemmistä toimenpiteistä. Jos virheitä ilmenee
@@ -70,8 +46,12 @@ function siivoa_laskentakomennot($komennot) {
  * Lopuksi palautetaan taulukko, jossa on kaksi sisäkkäistä taulukkoa.
  * "kunnossa" -taulukko sisältää tarkistuksista läpäisseet syötteet
  * ja "Virheelliset" -taulukko ne rivit, joissa oli ongelmia.
+ *
+ * Taulukon rakenne on seuraavanlainen:
+ * [avain] => [tunnus, myyntikate, myymalakate, nettokate, keskihankintahinta]
  */
 function tarkista_katelaskenta_syotteet($taulukko) {
+    
     // Luodaan uusi virhe-taulukko, johon kerätään mahdolliset
     // virheelliset rivit.
     $virherivit = array();
@@ -86,11 +66,12 @@ function tarkista_katelaskenta_syotteet($taulukko) {
             continue;
         }
         
-        // Siivotaan lasketakomennot ylimääräisistä merkeistä
-        $rivi[3] = siivoa_laskentakomennot($rivi[3]);
-        // Jos merkkijono siivoamisen jälkeen on tyhjä, lisätään
-        // rivi virhe-taulukkoon.
-        if(trim($rivi[3]) == "") {
+        if(!tarkista_kateprosentti($rivi[2])) {
+            $virherivit["'" . $rivi[0] . "'"] = $rivi;
+            continue;
+        }
+        
+        if(!tarkista_kateprosentti($rivi[3])) {
             $virherivit["'" . $rivi[0] . "'"] = $rivi;
             continue;
         }
@@ -112,7 +93,7 @@ function tarkista_katelaskenta_syotteet($taulukko) {
  * uusien hintojen päivittämistä varten.
  *
  * Taulukon rakenne on seuraavanlainen:
- * [avain] => [tunnus, kateprosentti, keskihankintahinta, komento]
+ * [avain] => [tunnus, myyntikate, myymalakate, nettokate, keskihankintahinta]
  */
 function luo_katelaskenta_update_komennot($taulukko) {
     // Luodaan update-komennoille taulukko, johon kaikki komennot
@@ -126,43 +107,40 @@ function luo_katelaskenta_update_komennot($taulukko) {
     foreach($taulukko as $rivi) {
         
         $rivin_tunnus = $rivi[0];
-        $rivin_kateprosentti = $rivi[1];
-        $rivin_keskihankintahinta = $rivi[2];
-        $rivin_komennot = $rivi[3];
+        $rivin_myyntikate = $rivi[1];
+        $rivin_myymalakate = $rivi[2];
+        $rivin_nettokate = $rivi[3];
+        $rivin_keskihankintahinta = $rivi[4];
         
         $update_kysely = "";
         $update_kysely .= $sql_komento_alku;
         
-        // Jos komennossa on 0 merkki jossakin kohti, ei hintamuutoksia
-        // tehdä. Tallennetaan vain komento talteen tietokantaan.
-        if(mb_strrchr($rivin_komennot, 0)) {
-            $update_kysely .= "katelaskenta = {$rivin_komennot} ";    
-        } else {
-            // Jos komennossa m, lasketaan myyntihinta.
-            if(mb_strrchr($rivin_komennot, "m")) {
-                $uusi_hinta = lisaa_hintaan_kate($rivin_keskihankintahinta, $rivin_kateprosentti);
-                $uusi_hinta = hintapyoristys($uusi_hinta, 2);
-                $update_kysely .= "myyntihinta = {$uusi_hinta}, ";
-            }
-            // Jos komennossa y, lasketaan myymalahinta.
-            if(mb_strrchr($rivin_komennot, "y")) {
-                $uusi_hinta = lisaa_hintaan_kate($rivin_keskihankintahinta, $rivin_kateprosentti);
-                $uusi_hinta = hintapyoristys($uusi_hinta, 2);
-                $update_kysely .= "myymalahinta = {$uusi_hinta}, ";
-            }
-            // Jos komennossa n, lasketaan nettohinta.
-            if(mb_strrchr($rivin_komennot, "n")) {
-                $uusi_hinta = lisaa_hintaan_kate($rivin_keskihankintahinta, $rivin_kateprosentti);
-                $uusi_hinta = hintapyoristys($uusi_hinta, 2);
-                $update_kysely .= "nettohinta = {$uusi_hinta}, ";
-            }
-            
-            // Lisätään kyselyyn pakolliset kentät, jotka tulee jokaiseen
-            // komennon lopuksi mukaan.
-            $update_kysely .= "katelaskenta = '{$rivin_komennot}', ";
-            $update_kysely .= "myyntikate = {$rivin_kateprosentti}, ";
-            $update_kysely .= "hintamuutospvm = NOW() ";
+        // Jos komennossa m, lasketaan myyntihinta.
+        if($rivin_myyntikate > 0) {
+            $uusi_hinta = lisaa_hintaan_kate($rivin_keskihankintahinta, $rivin_myyntikate);
+            $uusi_hinta = hintapyoristys($uusi_hinta, 2);
+            $update_kysely .= "myyntihinta = {$uusi_hinta}, ";
         }
+        // Jos komennossa y, lasketaan myymalahinta.
+        if($rivin_myymalakate > 0) {
+            $uusi_hinta = lisaa_hintaan_kate($rivin_keskihankintahinta, $rivin_myymalakate);
+            $uusi_hinta = hintapyoristys($uusi_hinta, 2);
+            $update_kysely .= "myymalahinta = {$uusi_hinta}, ";
+        }
+        // Jos komennossa n, lasketaan nettohinta.
+        if($rivin_nettokate > 0) {
+            $uusi_hinta = lisaa_hintaan_kate($rivin_keskihankintahinta, $rivin_nettokate);
+            $uusi_hinta = hintapyoristys($uusi_hinta, 2);
+            $update_kysely .= "nettohinta = {$uusi_hinta}, ";
+        }
+        
+        // Lisätään kyselyyn pakolliset kentät, jotka tulee jokaiseen
+        // komennon lopuksi mukaan.
+        $update_kysely .= "myyntikate = {$rivin_myyntikate}, ";
+        $update_kysely .= "myymalakate = {$rivin_myymalakate}, ";
+        $update_kysely .= "nettokate = {$rivin_nettokate}, ";
+        $update_kysely .= "hintamuutospvm = NOW() ";
+        
         // Kyselyn where -ehdon lisääminen.
         $update_kysely .= $sql_komento_loppu . $rivin_tunnus;
         
@@ -196,26 +174,26 @@ function tallenna_valitut_katemuutokset($data) {
     
     // Siivotaan valitut kateprosentit valittujen tuoterivien
     // perusteella. Jäljelle jää vain valitut tuotteet taulukosta.
-    $valitut_tuoterivit_kateprosentit = array_intersect_key($data["valitutkateprosentit"], $valitut_tuoterivit);
+    $valitut_tuoterivit_myyntikate = array_intersect_key($data["myyntikate"], $valitut_tuoterivit);
+    $valitut_tuoterivit_myymalakate = array_intersect_key($data["myymalakate"], $valitut_tuoterivit);
+    $valitut_tuoterivit_nettokate = array_intersect_key($data["nettokate"], $valitut_tuoterivit);
     
     // Siivotaan valitut keskihankintahinnat valittujen tuoterivien
     // perusteella. Jäljelle jää vain valitut tuotteet taulukosta.
     $valitut_tuoterivit_keskihankintahinnat = array_intersect_key($data["valitutkeskihankintahinnat"], $valitut_tuoterivit);    
     
-    // Siivotaan valitut keskihankintahinnat valittujen tuoterivien
-    // perusteella. Jäljelle jää vain valitut tuotteet taulukosta.
-    $valitut_tuoterivit_laskentakomennot = array_intersect_key($data["valituthinnat"], $valitut_tuoterivit);
     
     // Array_merge_recursive -funktiolla taulut yhdistetään yhdeksi kokonaisuudeksi.
     // Funktio käyttää taulukon avaimia, joilla tiedot koostetaan yksinkertaisemmaksi
     // taulukoksi.
     //
     // Tulevan taulun rakenne on seuraava:
-    // [avain] => [tunnus, kateprosentti, keskihankintahinta, komento]
+    // [avain] => [tunnus, myyntikate, myymalakate, nettokate, keskihankintahinta]
     $yhdistetyt_tuoterivit["kunnossa"] = array_merge_recursive($valitut_tuoterivit,
-                                                   $valitut_tuoterivit_kateprosentit,
-                                                   $valitut_tuoterivit_keskihankintahinnat,
-                                                   $valitut_tuoterivit_laskentakomennot);
+                                                   $valitut_tuoterivit_myyntikate,
+                                                   $valitut_tuoterivit_myymalakate,
+                                                   $valitut_tuoterivit_nettokate,
+                                                   $valitut_tuoterivit_keskihankintahinnat);
     
 
     // Tarkistetaan syötteet ja funktio palauttaa taulukon, jossa

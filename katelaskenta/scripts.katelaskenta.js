@@ -45,16 +45,16 @@ $(document).ready(function () {
         tuoterivitCheckboxes = tuoterivitTaulukko.find("tbody tr td:nth-child(2) input[type=checkbox]");
         footerCheckbox = tuoterivitTaulukko.find("tfoot tr td:first-child input[type=checkbox]");
         footerLaskeKaikki = tuoterivitTaulukko.find("tfoot tr td:last-child a");
-        footerKateMyyntihintaSarake = "td:nth-child(3) input";
-        footerKateMyymalahintaSarake = "td:nth-child(5) input";
-        footerKateNettohintaSarake = "td:nth-child(7) input";
+        footerKateMyyntihintaSarake = "td:nth-child(4) input";
+        footerKateMyymalahintaSarake = "td:nth-child(6) input";
+        footerKateNettohintaSarake = "td:nth-child(8) input";
         
-        kateMyyntihintaSarake = "td:nth-child(7) input";
-        kateMyymalahintaSarake = "td:nth-child(9) input";
-        kateNettohintaSarake = "td:nth-child(11) input";
-        myyntihintaSarake = "td:nth-child(8) span.hinta";
-        myymalahintaSarake = "td:nth-child(10) span.hinta";
-        nettohintaSarake = "td:nth-child(12) span.hinta";
+        kateMyyntihintaSarake = "td:nth-child(8) input";
+        kateMyymalahintaSarake = "td:nth-child(10) input";
+        kateNettohintaSarake = "td:nth-child(12) input";
+        myyntihintaSarake = "td:nth-child(7) span.hinta";
+        myymalahintaSarake = "td:nth-child(9) span.hinta";
+        nettohintaSarake = "td:nth-child(11) span.hinta";
         tuoteriviCheckboxSarake = "td:nth-child(2) input[type=checkbox]";
         tuoteriviLaskeNappiSarake = "td:last-child a";
     }
@@ -94,7 +94,7 @@ $(document).ready(function () {
         }
         
         if(!onkoVirheellinenMyyntikate(floatMyyntikate)) {
-            alert("Virheellinen myyntikate.");
+            alert("Virheellinen kate. Katekentt‰ ei voi olla tyhj‰ ja katteen pit‰‰ olla 0-100 v‰lill‰.");
             return false;
         }
 
@@ -187,12 +187,15 @@ $(document).ready(function () {
         var nettokate = tuoterivitTaulukko.find("tfoot tr").find(footerKateNettohintaSarake).val();
         
         if(!onkoVirheellinenMyyntikate(myyntikate)) {
+            alert("Virheellinen kate. Katekentt‰ ei voi olla tyhj‰ ja katteen pit‰‰ olla 0-100 v‰lill‰.");
             return true;
         }
         if(!onkoVirheellinenMyyntikate(myymalakate)) {
+            alert("Virheellinen kate. Katekentt‰ ei voi olla tyhj‰ ja katteen pit‰‰ olla 0-100 v‰lill‰.");
             return true;
         }
         if(!onkoVirheellinenMyyntikate(nettokate)) {
+            alert("Virheellinen kate. Katekentt‰ ei voi olla tyhj‰ ja katteen pit‰‰ olla 0-100 v‰lill‰.");
             return true;
         }
         
