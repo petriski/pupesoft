@@ -14,6 +14,10 @@ $(document).ready(function () {
     var tuoterivitCheckboxes; // tuoterivien checkboxit
     var footerCheckbox; // taulukon footer checkbox
     var footerLaskeKaikki;  // Footer osion "laske kaikki" nappi
+    var footerKateMyyntihintaSarake;
+    var footerKateMyymalahintaSarake;
+    var footerKateNettohintaSarake;
+    
     var kateMyyntihintaSarake;
     var kateMyymalahintaSarake;
     var kateNettohintaSarake;
@@ -27,6 +31,7 @@ $(document).ready(function () {
     var alustaMuuttujat;
     var onkoVirheellinenMyyntikate;
     var lisaaHintaanKate;
+    var asetaUusiHinta;
     
     /**
      * Funtion toiminto on vain alustaa tavittavat muuttujat, joita
@@ -40,6 +45,9 @@ $(document).ready(function () {
         tuoterivitCheckboxes = tuoterivitTaulukko.find("tbody tr td:nth-child(2) input[type=checkbox]");
         footerCheckbox = tuoterivitTaulukko.find("tfoot tr td:first-child input[type=checkbox]");
         footerLaskeKaikki = tuoterivitTaulukko.find("tfoot tr td:last-child a");
+        footerKateMyyntihintaSarake = "td:nth-child(3) input";
+        footerKateMyymalahintaSarake = "td:nth-child(5) input";
+        footerKateNettohintaSarake = "td:nth-child(7) input";
         
         kateMyyntihintaSarake = "td:nth-child(7) input";
         kateMyymalahintaSarake = "td:nth-child(9) input";
@@ -50,6 +58,7 @@ $(document).ready(function () {
         tuoteriviCheckboxSarake = "td:nth-child(2) input[type=checkbox]";
         tuoteriviLaskeNappiSarake = "td:last-child a";
     }
+    
     
     /**
      * Funktio tarkistaa annetun myyntikatteen, jotta laskutoimitukset
@@ -92,7 +101,20 @@ $(document).ready(function () {
         return floatKeskihankintaHinta / (1 - (floatMyyntikate / 100));
     };
     
-   
+    /**
+     * Funktio asettaa elementtiin uuden hinnan.
+     *
+     * Hintaan m‰‰ritet‰‰n k‰‰rin elementti eli t‰ss‰ tapauksessa
+     * <font>. Hinta v‰rj‰t‰‰n punaiseksi ja asetetaan annettuun
+     * elementtiin.
+     */
+    var asetaUusiHinta = function(hinta, kohdeElementti) {
+        var htmlUusiHinta = $("<font></font>")
+                                .css("color", "red")
+                                .css("font-weight", "bold")
+                                .text(hinta.toFixed(2));
+        $(kohdeElementti).empty().html(htmlUusiHinta);
+    };
     
     /**
      * T‰st‰ l‰htien ohjelmakoodissa m‰‰ritell‰‰n elementeille niiden
@@ -120,41 +142,22 @@ $(document).ready(function () {
         
         $(this).find(tuoteriviLaskeNappiSarake).on("click", function (event) {
             event.preventDefault();
-            var myyntikateArvo = myyntikate.val();
-            var uusiMyyntihinta = lisaaHintaanKate(keskihankintahinta, myyntikateArvo);
+            var uusiMyyntihinta = lisaaHintaanKate(keskihankintahinta, myyntikate.val());
             var uusiMyymalahinta = lisaaHintaanKate(keskihankintahinta, myymalakate.val());
             var uusiNettohinta = lisaaHintaanKate(keskihankintahinta, nettokate.val());
             
             if(uusiMyyntihinta !== false) {
-                var htmlUusiHinta = $("<font></font>")
-                                        .css("color", "red")
-                                        .css("font-weight", "bold")
-                                        .text(uusiMyyntihinta.toFixed(2));
-                $(myyntihintaElementti).empty().html(htmlUusiHinta);
+                asetaUusiHinta(uusiMyyntihinta, myyntihintaElementti);
             }
             
             if(uusiMyymalahinta !== false) {
-                var htmlUusiHinta = $("<font></font>")
-                                        .css("color", "red")
-                                        .css("font-weight", "bold")
-                                        .text(uusiMyymalahinta.toFixed(2));
-                $(myymalahintaElementti).empty().html(htmlUusiHinta);
+                asetaUusiHinta(uusiMyymalahinta, myymalahintaElementti);
             }
             
             if(uusiNettohinta !== false) {
-                var htmlUusiHinta = $("<font></font>")
-                                        .css("color", "red")
-                                        .css("font-weight", "bold")
-                                        .text(uusiNettohinta.toFixed(2));
-                $(nettohintaElementti).empty().html(htmlUusiHinta);
+                asetaUusiHinta(uusiNettohinta, nettohintaElementti);
             }
         });
-        // jos otetaan k‰yttˆˆn, pit‰‰ est‰‰, ettei 0 katteet p‰ivity aina.
-        //$(myyntikate).on("focusout", function (event) {
-        //    event.preventDefault();
-        //    var myyntikateArvo = myyntikate.val();
-        //    lisaaHintaanKate(hinta, keskihankintahinta, myyntikateArvo);
-        //});
     });
     
     // Lis‰t‰‰n taulukon viimeisen rivin valintaruudulle toimintalogiikka.
@@ -178,28 +181,49 @@ $(document).ready(function () {
     // muille tuoteriveille.
      footerLaskeKaikki.on("click", function (event) {
         event.preventDefault();
-        var myyntikate = footerRivi.find("td:nth-child(3) input").val();
-        var laskentakomennot = footerRivi.find("td:nth-child(4) input").val();
+        
+        var myyntikate = tuoterivitTaulukko.find("tfoot tr").find(footerKateMyyntihintaSarake).val();
+        var myymalakate = tuoterivitTaulukko.find("tfoot tr").find(footerKateMyymalahintaSarake).val();
+        var nettokate = tuoterivitTaulukko.find("tfoot tr").find(footerKateNettohintaSarake).val();
         
         if(!onkoVirheellinenMyyntikate(myyntikate)) {
+            return true;
+        }
+        if(!onkoVirheellinenMyyntikate(myymalakate)) {
+            return true;
+        }
+        if(!onkoVirheellinenMyyntikate(nettokate)) {
             return true;
         }
         
         // K‰yd‰‰n jokainen rivi l‰pi ja asetetaan uusi hinta, jos hinta
         // ei ole virheellinen.
         $.each(tuoterivit, function () {
-            var valintaElementti = $(this).find("td:nth-child(2) input[type=checkbox]");
+            var valintaElementti = $(this).find(tuoteriviCheckboxSarake);
 
             if (valintaElementti.attr("checked") === "checked") {
-                var hintaElementti = $(this).find("td:nth-child(6) span.hinta");
+                var myyntihintaElementti = $(this).find(myyntihintaSarake);
+                var myymalahintaElementti = $(this).find(myymalahintaSarake);
+                var nettohintaElementti = $(this).find(nettohintaSarake);
                 var keskihankintahinta = $(this).data("kehahinta");
-                var uusiHinta = lisaaHintaanKate(keskihankintahinta, myyntikate);
-                if(uusiHinta !== false) {
-                    // v‰ritet‰‰n uusi hinta eri v‰rill‰, jotta muutos erottuu.
-                    var htmlUusiHinta = "<font style=\"color: red; font-weight: bold;\">" + uusiHinta.toFixed(2) + "</font>";
-                    $(hintaElementti).empty().html(htmlUusiHinta);
-                    $(this).find("td:nth-child(8) input").val(myyntikate);
-                    $(this).find("td:nth-child(9) input").val(laskentakomennot);
+                
+                var uusiMyyntihinta = lisaaHintaanKate(keskihankintahinta, myyntikate);
+                var uusiMyymalahinta = lisaaHintaanKate(keskihankintahinta, myymalakate);
+                var uusiNettohinta = lisaaHintaanKate(keskihankintahinta, nettokate);
+               
+                if(uusiMyyntihinta !== false) {
+                    asetaUusiHinta(uusiMyyntihinta, myyntihintaElementti);
+                    $(this).find(kateMyyntihintaSarake).val(myyntikate);
+                }
+                
+                if(uusiMyymalahinta !== false) {
+                    asetaUusiHinta(uusiMyymalahinta, myymalahintaElementti);
+                    $(this).find(kateMyymalahintaSarake).val(myymalakate);
+                }
+                
+                if(uusiNettohinta !== false) {
+                    asetaUusiHinta(uusiNettohinta, nettohintaElementti);
+                    $(this).find(kateNettohintaSarake).val(nettokate);
                 }
             }
         });
