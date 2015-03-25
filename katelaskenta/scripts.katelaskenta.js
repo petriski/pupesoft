@@ -153,15 +153,15 @@ $(document).ready(function () {
             var uusiMyymalahinta = lisaaHintaanKate(keskihankintahinta, myymalakate.val());
             var uusiNettohinta = lisaaHintaanKate(keskihankintahinta, nettokate.val());
             
-            if(uusiMyyntihinta !== false) {
+            if(uusiMyyntihinta !== false && myyntikate.val() > 0) {
                 asetaUusiHinta(uusiMyyntihinta, myyntihintaElementti);
             }
             
-            if(uusiMyymalahinta !== false) {
+            if(uusiMyymalahinta !== false && myymalakate.val() > 0) {
                 asetaUusiHinta(uusiMyymalahinta, myymalahintaElementti);
             }
             
-            if(uusiNettohinta !== false) {
+            if(uusiNettohinta !== false && nettokate.val() > 0) {
                 asetaUusiHinta(uusiNettohinta, nettohintaElementti);
             }
         });
@@ -220,20 +220,23 @@ $(document).ready(function () {
                 var uusiMyymalahinta = lisaaHintaanKate(keskihankintahinta, myymalakate);
                 var uusiNettohinta = lisaaHintaanKate(keskihankintahinta, nettokate);
                
-                if(uusiMyyntihinta !== false) {
+                if(uusiMyyntihinta !== false && myyntikate > 0) {
                     asetaUusiHinta(uusiMyyntihinta, myyntihintaElementti);
-                    $(this).find(kateMyyntihintaSarake).val(myyntikate);
                 }
                 
-                if(uusiMyymalahinta !== false) {
+                if(uusiMyymalahinta !== false && myymalakate > 0) {
                     asetaUusiHinta(uusiMyymalahinta, myymalahintaElementti);
-                    $(this).find(kateMyymalahintaSarake).val(myymalakate);
                 }
                 
-                if(uusiNettohinta !== false) {
+                if(uusiNettohinta !== false && nettokate > 0) {
                     asetaUusiHinta(uusiNettohinta, nettohintaElementti);
-                    $(this).find(kateNettohintaSarake).val(nettokate);
                 }
+                
+                $(this).find(kateMyyntihintaSarake).val(myyntikate);
+                $(this).find(kateMyymalahintaSarake).val(myymalakate);
+                $(this).find(kateNettohintaSarake).val(nettokate);
+
+
             }
         });
     });
