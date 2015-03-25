@@ -407,6 +407,10 @@ $myy_hyllyalue       = array();
 $myy_hyllynro        = array();
 $myy_hyllytaso       = array();
 $myy_hyllyvali       = array();
+$myy_hyllyalue_temp  = "";
+$myy_hyllynro_temp   = "";
+$myy_hyllyvali_temp  = "";
+$myy_hyllytaso_temp  = "";
 $myy_varasto         = array();
 $myy_erikoistoimitus = array();
 $myy_kpl_myyty       = array();
@@ -2267,7 +2271,7 @@ if ($toimittamatta > 0 or trim($var) != '' or $rivityyppi == 'O') {
   if ($rivityyppi == 'O' and $rivitunnus > 0 and isset($suoratoimitus_rivitun) and $suoratoimitus_rivitun > 0) {
     // Kappalemäärää ei voida lisätä
     if ($yhtiorow["suoratoim_lisamyynti_osto"] != "K" and
-        $toimittamatta >= $suoratoimitus_rivikpl
+      $toimittamatta >= $suoratoimitus_rivikpl
     ) {
       $toimittamatta = $suoratoimitus_rivikpl;
     }
