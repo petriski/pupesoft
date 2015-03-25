@@ -2,7 +2,7 @@
 /*
  * functions.katelaskenta.php
  *
- * Tiedosto pit‰‰ sis‰ll‰‰n functioita katelaskenta toiminnon
+ * Tiedosto pit‰‰ sis‰ll‰‰n funktioita katelaskenta toiminnon
  * suorittamiseen.
  */
 

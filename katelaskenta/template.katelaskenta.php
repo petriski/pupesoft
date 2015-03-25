@@ -19,7 +19,7 @@
 <?php } ?>
 
 
-<?php if (!array_key_exists("ilmoitus", $template)) { ?>
+<?php if (!array_key_exists("ilmoitus", $template)) { // Tämä if-voidaan siirtää kontrolleriin, jos muutoksia vielä tehdään. ?>
     <form id="lomake-katelaskenta-hakutulokset" 
           action="?submit_button=1&sort=<?php echo $template["edsort"]; ?>&ojarj=<?php echo $template["ojarj"] . $template["ulisa"] . $template["variaatio_query_param"]; ?>" 
           method="post">
@@ -76,7 +76,7 @@
                         <td><input type="text" name="myymalakate['<?php echo $tuotetunnus; ?>']" value="<?php echo $tuote["myymalakate"]; ?>" size=4 /></td>
                         <td><span class="hinta" style="vertical-align: baseline;"><?php echo $tuote["nettohinta"]; ?></span> <?php echo $template["yhtio"]["valkoodi"]; ?></td>
                         <td><input type="text" name="nettokate['<?php echo $tuotetunnus; ?>']" value="<?php echo $tuote["nettokate"]; ?>" size=4 /></td>
-                        <?php hae_ja_piirra_saldo($tuote, $yhtiot, $oleastuote); // funktio katelaskenta.php -tiedostossa. ?>
+                        <?php hae_ja_piirra_saldo($tuote, $yhtiot, $oleastuote); // funktio ./katelaskenta/functions.php -tiedostossa. ?>
                         <td><a href="#">Laske</a></td>
                     </tr>
 

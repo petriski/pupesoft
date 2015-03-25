@@ -7,27 +7,34 @@
  */
 $(document).ready(function () {
 
-    // Esitell‰‰n muuttujat 
+    // Esitell‰‰n muuttujat.
+    // Kaikki muuttujat alustetaan funktiossa myˆhemm‰ss‰
+    // vaiheessa. 
     var tuoterivitTaulukko; // koko taulukko
     var tuoterivit; // kaikki taulukon rivit
-    var footerRivi; // taulukon footer rivi
     var tuoterivitCheckboxes; // tuoterivien checkboxit
+    var footerRivi; // taulukon footer rivi
     var footerCheckbox; // taulukon footer checkbox
-    var footerLaskeKaikki;  // Footer osion "laske kaikki" nappi
-    var footerKateMyyntihintaSarake;
-    var footerKateMyymalahintaSarake;
-    var footerKateNettohintaSarake;
+    var footerLaskeKaikki;  // Footer osion
     
+    // Kaikki sarake-p‰‰tteiset muuttujat ovat jqueryn
+    // selectoreita kertomaan, miss‰ oikea sarake on
+    // mik‰li k‰yttˆliittym‰‰ menn‰‰n muuttamaan.
+    var footerKateMyyntihintaSarake; 
+    var footerKateMyymalahintaSarake; 
+    var footerKateNettohintaSarake; 
+    var tuoteriviCheckboxSarake;
+    var tuoteriviLaskeNappiSarake;
     var kateMyyntihintaSarake;
     var kateMyymalahintaSarake;
     var kateNettohintaSarake;
     var myyntihintaSarake;
     var myymalahintaSarake;
     var nettohintaSarake;
-    var tuoteriviCheckboxSarake;
-    var tuoteriviLaskeNappiSarake;
-
-    // Esitell‰‰n funktiot, toteutukset lˆytyv‰t alapuolelta.
+    
+    
+    // Esitell‰‰n funktiot.
+    // Toteutukset lˆytyv‰t alapuolelta.
     var alustaMuuttujat;
     var onkoVirheellinenMyyntikate;
     var lisaaHintaanKate;
@@ -41,14 +48,14 @@ $(document).ready(function () {
     var alustaMuuttujat = function() {
         tuoterivitTaulukko = $("#katelaskenta-hakutulokset");
         tuoterivit = tuoterivitTaulukko.find("tbody tr");
-        footerRivi = tuoterivitTaulukko.find("tfoot tr");
         tuoterivitCheckboxes = tuoterivitTaulukko.find("tbody tr td:nth-child(2) input[type=checkbox]");
+        footerRivi = tuoterivitTaulukko.find("tfoot tr");
         footerCheckbox = tuoterivitTaulukko.find("tfoot tr td:first-child input[type=checkbox]");
         footerLaskeKaikki = tuoterivitTaulukko.find("tfoot tr td:last-child a");
+        
         footerKateMyyntihintaSarake = "td:nth-child(4) input";
         footerKateMyymalahintaSarake = "td:nth-child(6) input";
         footerKateNettohintaSarake = "td:nth-child(8) input";
-        
         kateMyyntihintaSarake = "td:nth-child(8) input";
         kateMyymalahintaSarake = "td:nth-child(10) input";
         kateNettohintaSarake = "td:nth-child(12) input";
@@ -127,7 +134,7 @@ $(document).ready(function () {
     alustaMuuttujat();
     
     // Lis‰t‰‰n jokaiselle tuoterivin laske-painikkeellle toimintalogiikka.
-    // Laske painike laskee annetun kateprosentin mukaan uuden myyntihinnan.
+    // Laske painike laskee annetun kateprosentin mukaan uuden hinnan.
     $.each(tuoterivit, function () {
         var keskihankintahinta = $(this).data("kehahinta");
 
@@ -176,9 +183,8 @@ $(document).ready(function () {
         });
     
     // Lis‰t‰‰n taulukon viimeisen rivin "laske kaikki" -painikkeelle
-    // toimintalogiikka. Painiketta painaessa lasketaan viimeisen rivin
-    // arvoilla uusi hinta ja samat arvot m‰‰ritet‰‰n taulukon kaikille
-    // muille tuoteriveille.
+    // toimintalogiikka. Painiketta painaessa lasketaan uusi hinta ja
+    // samat arvot m‰‰ritet‰‰n taulukon kaikille muille tuoteriveille.
      footerLaskeKaikki.on("click", function (event) {
         event.preventDefault();
         
